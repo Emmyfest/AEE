@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Results - Admin Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{ url_for('admin_dashboard') }}">
+                <i class="fas fa-user-shield"></i> Admin Panel
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+                <a class="nav-link" href="{{ url_for('admin_students') }}">Students</a>
+                <a class="nav-link active" href="{{ url_for('admin_upload_results') }}">Upload Results</a>
+                <a class="nav-link" href="{{ url_for('admin_logout') }}">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="card shadow">
+                    <div class="card-header bg-success text-white">
+                        <h4 class="mb-0"><i class="fas fa-upload me-2"></i>Upload Student Result</h4>
+                    </div>
+                    <div class="card-body">
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                                {% for category, message in messages %}
+                                    <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }} alert-dismissible fade show" role="alert">
+                                        {{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
+
+                        <form method="POST" id="resultForm">
+                            <div class="mb-3">
+                                <label for="matric_number" class="form-label">Student Matric Number <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="matric_number" name="matric_number" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="course_search" class="form-label">Search Course <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="course_search" placeholder="Type to search courses..." autocomplete="off">
+                                <div id="courseResults" class="list-group mt-2" style="display:none; max-height: 300px; overflow-y: auto;"></div>
+                            </div>
+
+                            <input type="hidden" id="course_code" name="course_code">
+                            <input type="hidden" id="course_unit" name="course_unit">
+                            
+                            <div class="mb-3">
+                                <label for="course_title" class="form-label">Course Title <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="course_title" name="course_title" readonly required>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="score" class="form-label">Score <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control" id="score" name="score" min="0" max="100" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="semester" class="form-label">Semester <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="semester" name="semester" required>
+                                        <option value="">Select Semester</option>
+                                        <option value="1">First Semester</option>
+                                        <option value="2">Second Semester</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="session_id" class="form-label">Academic Session <span class="text-danger">*</span></label>
+                                <select class="form-select" id="session_id" name="session_id" required>
+                                    <option value="">Select Session</option>
+                                    {% for sess in sessions %}
+                                    <option value="{{ sess.id }}">{{ sess.session_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    <i class="fas fa-save me-2"></i>Upload Result
+                                </button>
+                                <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary btn-lg">
+                                    <i class="fas fa-times me-2"></i>Cancel
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const courseSearch = document.getElementById('course_search');
+        const courseResults = document.getElementById('courseResults');
+        const courseCodeInput = document.getElementById('course_code');
+        const courseTitleInput = document.getElementById('course_title');
+        const courseUnitInput = document.getElementById('course_unit');
+        let searchTimeout;
+
+        courseSearch.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            const query = this.value.trim();
+            
+            if (query.length < 2) {
+                courseResults.style.display = 'none';
+                courseResults.innerHTML = '';
+                return;
+            }
+
+            searchTimeout = setTimeout(() => {
+                fetch(`/api/courses/search?q=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(courses => {
+                        if (courses.length === 0) {
+                            courseResults.innerHTML = '<div class="list-group-item">No courses found</div>';
+                            courseResults.style.display = 'block';
+                            return;
+                        }
+
+                        courseResults.innerHTML = courses.map(course => `
+                            <a href="#" class="list-group-item list-group-item-action" 
+                               data-code="${course.course_code}" 
+                               data-title="${course.course_title}"
+                               data-unit="${course.course_unit}">
+                                <strong>${course.course_code}</strong> - ${course.course_title} (${course.course_unit} Units)
+                            </a>
+                        `).join('');
+                        courseResults.style.display = 'block';
+
+                        document.querySelectorAll('#courseResults .list-group-item').forEach(item => {
+                            item.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                const code = this.dataset.code;
+                                const title = this.dataset.title;
+                                const unit = this.dataset.unit;
+
+                                courseCodeInput.value = code;
+                                courseTitleInput.value = title;
+                                courseUnitInput.value = unit;
+                                courseSearch.value = `${code} - ${title}`;
+                                courseResults.style.display = 'none';
+                            });
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching courses:', error);
+                        courseResults.innerHTML = '<div class="list-group-item text-danger">Error loading courses</div>';
+                        courseResults.style.display = 'block';
+                    });
+            }, 300);
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!courseResults.contains(e.target) && e.target !== courseSearch) {
+                courseResults.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
