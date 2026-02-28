@@ -17,10 +17,426 @@
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        /* ============================================================
+           TOKENS — match main site exactly
+        ============================================================ */
+        :root {
+            --blue:        #0d6efd;
+            --blue-dark:   #0a4fa0;
+            --green-deep:  #1a3d2b;
+            --green-mid:   #2d6a4f;
+            --green-acc:   #40916c;
+            --green-light: #74c69d;
+            --gold:        #d4a017;
+            --gold-lt:     #f0c040;
+            --cream:       #f8f4ef;
+            --cream-alt:   #eaf4ef;
+            --cream-dk:    #ede8e0;
+            --charcoal:    #1c1c1e;
+            --muted:       #6b7280;
+            --white:       #ffffff;
+            --sh-sm:       0 2px 12px rgba(0,0,0,.07);
+            --sh-md:       0 8px 32px rgba(0,0,0,.12);
+            --sh-lg:       0 24px 64px rgba(0,0,0,.16);
+            --r:           12px;
+            --rl:          20px;
+            --ease:        cubic-bezier(.4,0,.2,1);
+        }
+
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        html{scroll-behavior:smooth}
+        body{
+            font-family:'Outfit',sans-serif;
+            background:var(--cream);
+            color:var(--charcoal);
+            line-height:1.75;
+            overflow-x:hidden;
+        }
+        h1,h2,h3,h4,h5,h6{font-family:'Playfair Display',serif;line-height:1.2}
+        a{text-decoration:none}
+
+        ::-webkit-scrollbar{width:6px}
+        ::-webkit-scrollbar-track{background:#e8f0e9}
+        ::-webkit-scrollbar-thumb{background:var(--green-acc);border-radius:4px}
+
+        /* flash */
+        .flash-messages{position:fixed;top:80px;right:20px;z-index:9999;width:340px}
+
+        /* ============================================================
+           SHARED
+        ============================================================ */
+        .section-title{
+            font-family:'Playfair Display',serif;
+            font-size:clamp(1.8rem,3vw,2.6rem);
+            font-weight:700;color:var(--green-deep);
+        }
+        .title-underline{
+            width:60px;height:3px;
+            background:linear-gradient(90deg,var(--blue),var(--green-acc));
+            border-radius:3px;margin:10px auto 18px;
+        }
+        .section-lead{font-size:.97rem;color:var(--muted);max-width:540px;margin:0 auto}
+
+        .fu{opacity:0;transform:translateY(26px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
+        .fu.in{opacity:1;transform:translateY(0)}
+        .fu:nth-child(2){transition-delay:.08s}
+        .fu:nth-child(3){transition-delay:.16s}
+        .fu:nth-child(4){transition-delay:.24s}
+        .fu:nth-child(5){transition-delay:.32s}
+        .fu:nth-child(6){transition-delay:.40s}
+
+        .dot-bg{
+            pointer-events:none;position:absolute;inset:0;
+            background-image:radial-gradient(var(--green-acc) 1px,transparent 1px);
+            background-size:26px 26px;opacity:.05;
+        }
+        .wave{line-height:0}.wave svg{display:block}
+
+        /* ============================================================
+           HERO
+        ============================================================ */
+        .hero-staff{
+            background:linear-gradient(135deg,var(--blue) 0%,var(--blue-dark) 40%,var(--green-deep) 100%);
+            padding:140px 0 80px;
+            position:relative;
+            overflow:hidden;
+        }
+        .hero-staff::before{
+            content:'';position:absolute;inset:0;
+            background-image:radial-gradient(rgba(255,255,255,.07) 1px,transparent 1px);
+            background-size:28px 28px;
+        }
+        /* decorative circle */
+        .hero-staff::after{
+            content:'';position:absolute;
+            width:500px;height:500px;border-radius:50%;
+            background:radial-gradient(circle,rgba(116,198,157,.18) 0%,transparent 70%);
+            top:-100px;right:-100px;
+        }
+        .hero-eyebrow{
+            display:inline-flex;align-items:center;gap:8px;
+            background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);
+            color:var(--gold-lt);font-size:.72rem;font-weight:700;
+            letter-spacing:.15em;text-transform:uppercase;
+            padding:6px 16px;border-radius:50px;margin-bottom:1.2rem;
+        }
+        .hero-eyebrow span{width:5px;height:5px;background:var(--gold-lt);border-radius:50%;display:inline-block}
+        .hero-title{
+            font-family:'Playfair Display',serif;
+            font-size:clamp(2.4rem,5vw,4rem);
+            font-weight:700;color:#fff;
+            margin-bottom:1rem;text-shadow:0 2px 20px rgba(0,0,0,.3);
+        }
+        .hero-title em{font-style:italic;color:var(--green-light)}
+        .hero-desc{font-size:1rem;color:rgba(255,255,255,.8);max-width:500px;margin:0 auto 2rem;font-weight:300}
+
+        .hero-stat-row{
+            display:flex;justify-content:center;flex-wrap:wrap;gap:0;
+            margin-top:3rem;
+            background:rgba(255,255,255,.07);
+            border-radius:var(--rl);
+            border:1px solid rgba(255,255,255,.12);
+            overflow:hidden;
+            max-width:560px;margin-left:auto;margin-right:auto;
+        }
+        .hero-stat{
+            padding:18px 32px;flex:1;text-align:center;
+            border-right:1px solid rgba(255,255,255,.1);
+        }
+        .hero-stat:last-child{border-right:none}
+        .hero-stat-num{
+            font-family:'Playfair Display',serif;
+            font-size:2rem;font-weight:700;color:var(--gold-lt);line-height:1;
+        }
+        .hero-stat-label{font-size:.68rem;color:rgba(255,255,255,.55);letter-spacing:.1em;text-transform:uppercase;margin-top:4px}
+
+        /* ============================================================
+           HOD CARD
+        ============================================================ */
+        #leadership{padding:90px 0;background:var(--cream);position:relative}
+        #leadership::before{
+            content:'';position:absolute;top:0;left:0;right:0;height:4px;
+            background:linear-gradient(90deg,var(--blue),var(--green-acc),var(--gold));
+        }
+
+        .hod-card{
+            background:var(--white);
+            border-radius:var(--rl);
+            overflow:hidden;
+            box-shadow:var(--sh-lg);
+            border:1px solid rgba(0,0,0,.06);
+            max-width:720px;margin:0 auto;
+        }
+        .hod-card__top{
+            background:linear-gradient(135deg,var(--blue),var(--blue-dark));
+            padding:40px 40px 0;
+            display:flex;align-items:flex-end;gap:32px;
+            position:relative;
+        }
+        .hod-card__top::after{
+            content:'';position:absolute;bottom:0;left:0;right:0;height:60px;
+            background:var(--white);border-radius:var(--rl) var(--rl) 0 0;
+        }
+        .hod-avatar-wrap{
+            position:relative;z-index:2;flex-shrink:0;
+        }
+        .hod-avatar{
+            width:160px;height:160px;border-radius:50%;
+            object-fit:cover;
+            border:5px solid var(--white);
+            box-shadow:0 8px 32px rgba(0,0,0,.25);
+            display:block;
+        }
+        .hod-avatar-badge{
+            position:absolute;bottom:6px;right:6px;
+            width:36px;height:36px;border-radius:50%;
+            background:var(--gold);
+            border:3px solid var(--white);
+            display:flex;align-items:center;justify-content:center;
+            color:var(--green-deep);font-size:.8rem;
+        }
+        .hod-title-area{position:relative;z-index:2;padding-bottom:20px;}
+        .hod-role{
+            display:inline-block;
+            background:rgba(255,255,255,.2);
+            color:#fff;font-size:.7rem;font-weight:700;
+            letter-spacing:.12em;text-transform:uppercase;
+            padding:4px 12px;border-radius:50px;margin-bottom:8px;
+        }
+        .hod-name{font-size:1.7rem;color:#fff;margin-bottom:4px;font-weight:700}
+        .hod-subtitle{font-size:.88rem;color:rgba(255,255,255,.75)}
+
+        .hod-card__body{padding:32px 40px 36px;}
+        .hod-detail-grid{
+            display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;
+        }
+        @media(max-width:600px){.hod-detail-grid{grid-template-columns:1fr}}
+        .hod-detail{
+            background:var(--cream);border-radius:10px;
+            padding:14px 16px;border:1px solid rgba(0,0,0,.06);
+        }
+        .hod-detail-label{
+            font-size:.68rem;font-weight:700;letter-spacing:.08em;
+            text-transform:uppercase;color:var(--blue);margin-bottom:5px;
+        }
+        .hod-detail-value{font-size:.85rem;color:var(--charcoal);line-height:1.5}
+
+        .interest-pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+        .interest-pill{
+            background:rgba(13,110,253,.08);color:var(--blue);
+            font-size:.75rem;font-weight:500;
+            padding:4px 12px;border-radius:50px;
+            border:1px solid rgba(13,110,253,.15);
+        }
+
+        /* ============================================================
+           PROFESSOR / STAFF CARDS
+        ============================================================ */
+        .staff-grid{
+            display:grid;
+            grid-template-columns:repeat(3,1fr);
+            gap:24px;
+        }
+        @media(max-width:991px){.staff-grid{grid-template-columns:repeat(2,1fr)}}
+        @media(max-width:576px){.staff-grid{grid-template-columns:1fr}}
+
+        .sc{
+            background:var(--white);
+            border-radius:var(--rl);
+            overflow:hidden;
+            box-shadow:var(--sh-sm);
+            border:1px solid rgba(0,0,0,.06);
+            transition:transform .35s var(--ease),box-shadow .35s var(--ease);
+            display:flex;flex-direction:column;
+        }
+        .sc:hover{transform:translateY(-8px);box-shadow:var(--sh-lg)}
+
+        .sc__top{
+            height:90px;
+            position:relative;
+            display:flex;align-items:flex-end;justify-content:center;
+            padding-bottom:0;
+        }
+        /* colour accent bar — different for each rank */
+        .sc__top.prof   {background:linear-gradient(135deg,var(--green-mid),var(--green-acc))}
+        .sc__top.senior {background:linear-gradient(135deg,var(--blue),var(--blue-dark))}
+        .sc__top.lect   {background:linear-gradient(135deg,var(--gold),#c8860f)}
+        .sc__top.engr   {background:linear-gradient(135deg,#6f42c1,#4b2d8e)}
+
+        .sc__img-wrap{
+            position:absolute;bottom:-44px;
+            width:90px;height:90px;
+        }
+        .sc__img{
+            width:90px;height:90px;border-radius:50%;
+            object-fit:cover;
+            border:4px solid var(--white);
+            box-shadow:0 4px 16px rgba(0,0,0,.18);
+        }
+        .sc__rank-dot{
+            position:absolute;bottom:0;right:0;
+            width:22px;height:22px;border-radius:50%;
+            background:var(--gold);border:3px solid var(--white);
+            display:flex;align-items:center;justify-content:center;
+            font-size:.55rem;color:var(--green-deep);font-weight:800;
+        }
+
+        .sc__body{padding:56px 22px 24px;flex:1;text-align:center}
+
+        .sc__name{font-size:1.05rem;font-weight:700;color:var(--green-deep);margin-bottom:3px}
+        .sc__role{
+            font-size:.72rem;font-weight:700;letter-spacing:.08em;
+            text-transform:uppercase;margin-bottom:14px;
+        }
+        .sc__role.prof   {color:var(--green-acc)}
+        .sc__role.senior {color:var(--blue)}
+        .sc__role.lect   {color:#9a6500}
+        .sc__role.engr   {color:#6f42c1}
+
+        .sc__divider{
+            width:36px;height:2px;
+            border-radius:2px;margin:0 auto 14px;
+        }
+        .sc__divider.prof   {background:var(--green-acc)}
+        .sc__divider.senior {background:var(--blue)}
+        .sc__divider.lect   {background:var(--gold)}
+        .sc__divider.engr   {background:#6f42c1}
+
+        .sc__info{list-style:none;text-align:left}
+        .sc__info li{
+            font-size:.8rem;color:var(--muted);
+            padding:7px 0;border-bottom:1px dashed rgba(0,0,0,.07);
+            display:flex;align-items:flex-start;gap:9px;
+        }
+        .sc__info li:last-child{border-bottom:none}
+        .sc__info li i{width:14px;flex-shrink:0;margin-top:3px;font-size:.75rem}
+        .sc__info li.email i{color:var(--blue)}
+        .sc__info li.spec  i{color:var(--green-acc)}
+        .sc__info li.qual  i{color:var(--gold)}
+        .sc__info li.room  i{color:var(--muted)}
+
+        .sc__footer{
+            padding:14px 22px;
+            border-top:1px solid rgba(0,0,0,.06);
+            background:var(--cream);
+            display:flex;justify-content:center;
+        }
+        .sc__email-btn{
+            display:inline-flex;align-items:center;gap:7px;
+            font-size:.78rem;font-weight:600;color:var(--blue);
+            padding:7px 16px;border-radius:8px;
+            border:1.5px solid rgba(13,110,253,.25);
+            transition:all .3s;
+        }
+        .sc__email-btn:hover{background:var(--blue);color:#fff;border-color:var(--blue)}
+
+        /* ============================================================
+           SECTION WRAPPERS
+        ============================================================ */
+        #professors{padding:88px 0;background:linear-gradient(160deg,var(--cream-alt),var(--cream-dk))}
+        #lecturers {padding:88px 0;background:var(--cream);position:relative}
+        #research  {padding:88px 0;background:linear-gradient(160deg,var(--cream-alt),var(--cream-dk))}
+        #connect   {padding:88px 0;background:var(--cream);position:relative}
+
+        /* ============================================================
+           RESEARCH AREAS
+        ============================================================ */
+        .res-area-card{
+            background:var(--white);border-radius:var(--rl);
+            overflow:hidden;box-shadow:var(--sh-sm);
+            border:1px solid rgba(0,0,0,.06);height:100%;
+            transition:transform .35s var(--ease),box-shadow .35s var(--ease);
+        }
+        .res-area-card:hover{transform:translateY(-6px);box-shadow:var(--sh-md)}
+        .res-area-card__hd{
+            padding:20px 26px;display:flex;align-items:center;gap:12px;
+        }
+        .res-area-card__hd.agric{background:linear-gradient(135deg,var(--green-mid),var(--green-acc));color:#fff}
+        .res-area-card__hd.env  {background:linear-gradient(135deg,var(--blue),var(--blue-dark));color:#fff}
+        .res-area-card__hd .hicon{
+            width:36px;height:36px;border-radius:9px;
+            background:rgba(255,255,255,.15);
+            display:flex;align-items:center;justify-content:center;font-size:1rem;
+        }
+        .res-area-card__hd h5{font-size:1.1rem;margin:0}
+        .res-area-card__body{padding:24px}
+        .ra-list{list-style:none}
+        .ra-list li{
+            padding:9px 0;border-bottom:1px dashed rgba(0,0,0,.07);
+            display:flex;align-items:center;gap:10px;font-size:.88rem;
+        }
+        .ra-list li:last-child{border-bottom:none}
+        .ra-list li .dot{
+            width:8px;height:8px;border-radius:50%;flex-shrink:0;
+        }
+        .ra-list li .dot.green{background:var(--green-acc)}
+        .ra-list li .dot.blue {background:var(--blue)}
+
+        /* ============================================================
+           CONNECT CARDS
+        ============================================================ */
+        .connect-card{
+            background:var(--white);border-radius:var(--rl);
+            padding:32px 26px;text-align:center;
+            box-shadow:var(--sh-sm);border:1px solid rgba(0,0,0,.06);
+            height:100%;
+            transition:transform .35s var(--ease),box-shadow .35s var(--ease);
+        }
+        .connect-card:hover{transform:translateY(-6px);box-shadow:var(--sh-md)}
+        .connect-icon{
+            width:64px;height:64px;border-radius:16px;
+            display:flex;align-items:center;justify-content:center;
+            margin:0 auto 18px;font-size:1.5rem;
+        }
+        .connect-icon.email{background:linear-gradient(135deg,#e3f2fd,#bbdefb);color:var(--blue)}
+        .connect-icon.hours{background:linear-gradient(135deg,#e8f5e9,#c8e6c9);color:var(--green-mid)}
+        .connect-icon.collab{background:linear-gradient(135deg,#fff8e1,#ffe082);color:#9a6500}
+        .connect-card h5{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--green-deep);margin-bottom:10px}
+        .connect-card p{font-size:.87rem;color:var(--muted);line-height:1.7}
+        .connect-tag{
+            display:inline-block;margin-top:14px;
+            font-size:.75rem;font-weight:600;
+            color:var(--blue);background:rgba(13,110,253,.08);
+            padding:5px 14px;border-radius:50px;border:1px solid rgba(13,110,253,.15);
+        }
+
+        /* ============================================================
+           FOOTER
+        ============================================================ */
+        footer{
+            background:linear-gradient(160deg,#0a1a10 0%,#1a3d2b 100%);
+            color:rgba(255,255,255,.72);padding:64px 0 0;
+        }
+        .foot-brand{font-family:'Playfair Display',serif;font-size:1.25rem;color:var(--green-light);font-weight:700;margin-bottom:10px}
+        .foot-desc{font-size:.84rem;line-height:1.75;margin-bottom:18px}
+        .foot-social a{
+            display:inline-flex;align-items:center;justify-content:center;
+            width:34px;height:34px;border-radius:8px;
+            border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.65);
+            margin-right:8px;text-decoration:none;transition:all .3s;
+        }
+        .foot-social a:hover{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.35)}
+        .foot-hd{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--gold-lt);margin-bottom:18px}
+        .foot-links{list-style:none}
+        .foot-links li{margin-bottom:9px}
+        .foot-links a{
+            color:rgba(255,255,255,.6);font-size:.84rem;
+            display:flex;align-items:center;gap:6px;
+            text-decoration:none;transition:all .3s;
+        }
+        .foot-links a:hover{color:var(--green-light);padding-left:5px}
+        .foot-links a::before{content:'→';font-size:.72rem;opacity:.55}
+        .foot-ci{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px}
+        .foot-ci i{color:var(--green-light);width:15px;flex-shrink:0;margin-top:3px}
+        .foot-ci span{font-size:.83rem}
+        .foot-bottom{border-top:1px solid rgba(255,255,255,.08);margin-top:48px;padding:20px 0;text-align:center}
+        .foot-bottom p{font-size:.76rem;color:rgba(255,255,255,.38);margin:0}
+    </style>
 </head>
 <body>
-    
-    <!-- Navigation -->
+
+        <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" id="navbar">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="{{ url_for('index') }}">
@@ -82,35 +498,51 @@
         </div>
     </section>
 
-    <!-- Department Leadership -->
-    <section class="py-5 bg-light">
-        <div class="container">
+
+    <!-- ============================================================
+         HOD
+    ============================================================ -->
+    <section id="leadership">
+        <div class="dot-bg"></div>
+        <div class="container position-relative">
             <div class="text-center mb-5">
                 <h2 class="section-title">Department Leadership</h2>
                 <div class="title-underline"></div>
-                <p class="lead">Leading the department with vision and excellence</p>
+                <p class="section-lead">Leading the department with vision, scholarship, and commitment to excellence.</p>
             </div>
-            
-            <div class="row justify-content-center">
-                <!-- Head of Department -->
-                <div class="col-lg-6 col-md-8 mb-4">
-                    <div class="card shadow-lg border-0 h-100">
-                        <div class="card-header bg-primary text-white text-center">
-                            <h4 class="mb-0"><i class="fas fa-crown me-2"></i>Head of Department</h4>
+
+            <div class="hod-card fu">
+                <div class="hod-card__top">
+                    <div class="hod-avatar-wrap">
+                        <img src="{{ url_for('static', filename='images/staff/omobowale.jpg') }}" alt="HOD" class="hod-avatar">
+                        <div class="hod-avatar-badge"><i class="fas fa-crown"></i></div>
+                    </div>
+                    <div class="hod-title-area">
+                        <span class="hod-role"><i class="fas fa-crown me-1"></i>Head of Department</span>
+                        <div class="hod-name">Prof. M. O. Omobowale</div>
+                        <div class="hod-subtitle">Senior Lecturer &nbsp;·&nbsp; Agricultural Engineering</div>
+                    </div>
+                </div>
+                <div class="hod-card__body">
+                    <div class="hod-detail-grid">
+                        <div class="hod-detail">
+                            <div class="hod-detail-label"><i class="fas fa-certificate me-1"></i>Qualifications</div>
+                            <div class="hod-detail-value">B.Sc, M.Sc., Ph.D. Agric. Engr. (Ibadan)<br>R. Engr. (COREN)</div>
                         </div>
-                        <div class="card-body text-center p-4">
-                            <div class="staff-avatar mb-4">
-                                <img src="{{ url_for('static', filename='images/staff/omobowale.jpg') }}" alt="HOD Photo" class="rounded-circle border border-4 border-primary" style="width: 150px; height: 150px; object-fit: cover;">
-                            </div>
-                            <h3 class="card-title text-primary">Prof. M.O. Omobowale</h3>
-                            <p class="text-muted mb-3 fs-5">Head of Department & Senior Lecturer</p>
-                            <div class="row text-start">
-                                <div class="col-12">
-                                    <p class="card-text"><strong>Qualifications:</strong> B.Sc, M.Sc., Ph.D. Agric. Engr. (Ibadan) R. Engr. (COREN)</p>
-                                    <p class="card-text"><strong>Email:</strong> mo.omobowale@ui.edu.ng</p>
-                                    <p class="card-text"><strong>Office:</strong> Room 101, Agricultural Engineering Building</p>
-                                    <p class="card-text"><strong>Research Interests:</strong> Agricultural Machinery, Farm Power Systems, Precision Agriculture</p>
-                                </div>
+                        <div class="hod-detail">
+                            <div class="hod-detail-label"><i class="fas fa-envelope me-1"></i>Email</div>
+                            <div class="hod-detail-value">mo.omobowale@ui.edu.ng</div>
+                        </div>
+                        <div class="hod-detail">
+                            <div class="hod-detail-label"><i class="fas fa-door-open me-1"></i>Office</div>
+                            <div class="hod-detail-value">Room 101, Agricultural Engineering Building</div>
+                        </div>
+                        <div class="hod-detail">
+                            <div class="hod-detail-label"><i class="fas fa-flask me-1"></i>Research Interests</div>
+                            <div class="interest-pills">
+                                <span class="interest-pill">Agricultural Machinery</span>
+                                <span class="interest-pill">Farm Power Systems</span>
+                                <span class="interest-pill">Precision Agriculture</span>
                             </div>
                         </div>
                     </div>
@@ -119,241 +551,313 @@
         </div>
     </section>
 
-    <!-- Professors -->
-    <section class="py-5">
+    <!-- wave -->
+    <div class="wave" style="background:var(--cream);">
+        <svg viewBox="0 0 1440 55" preserveAspectRatio="none" style="width:100%;height:55px;">
+            <path d="M0,55 L0,28 Q360,0 720,28 Q1080,55 1440,28 L1440,55 Z" fill="var(--cream-alt)"/>
+        </svg>
+    </div>
+
+    <!-- ============================================================
+         PROFESSORS
+    ============================================================ -->
+    <section id="professors">
         <div class="container">
             <div class="text-center mb-5">
                 <h2 class="section-title">Professors</h2>
                 <div class="title-underline"></div>
-                <p class="lead">Distinguished professors leading research and academic excellence</p>
+                <p class="section-lead">Distinguished professors leading research and academic excellence.</p>
             </div>
-            
-            <div class="row">
-                <!-- Prof. A. Y. Sangodoyin -->
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="staff-card card shadow-sm h-100">
-                        <div class="card-body text-center">
-                            <div class="staff-avatar mb-3">
-                                <img src="{{ url_for('static', filename='images/staff/sango.jpeg') }}" alt="Prof. Sangodoyin" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #28a745;">
-                            </div>
-                            <h5 class="card-title">Prof. A. Y. Sangodoyin</h5>
-                            <p class="text-muted mb-2">Professor</p>
-                            <p class="card-text small"><strong>Qualifications:</strong> B.Sc. (Ibadan), M.Sc. Water Resources Technology, Ph.D. Civil Engineering, Birmingham, U.K., R. Engr. (COREN)</p>
-                            <p class="card-text small"><strong>Specialization:</strong> Water Resources Engineering, Environmental Management</p>
-                            <p class="card-text small"><strong>Email:</strong> ay.sangodoyin@ui.edu.ng</p>
-                            <p class="card-text small"><strong>Office:</strong> Room 102, Agricultural Engineering Building</p>
+
+            <div class="staff-grid">
+
+                <!-- Sangodoyin -->
+                <div class="sc fu">
+                    <div class="sc__top prof">
+                        <div class="sc__img-wrap">
+                            <img src="{{ url_for('static', filename='images/staff/sango.jpeg') }}" alt="Prof. Sangodoyin" class="sc__img">
+                            <div class="sc__rank-dot">P</div>
                         </div>
                     </div>
-                </div>
-                
-                <!-- Prof. E. A. Ajayi -->
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="staff-card card shadow-sm h-100">
-                        <div class="card-body text-center">
-                            <div class="staff-avatar mb-3">
-                                <img src="{{ url_for('static', filename='images/staff/Ajayi.jpeg') }}" alt="Prof. Ajayi" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #17a2b8;">
-                            </div>
-                            <h5 class="card-title">Prof. E. A. Ajayi</h5>
-                            <p class="text-muted mb-2">Professor</p>
-                            <p class="card-text small"><strong>Qualifications:</strong> B.Sc., M.Sc. (Ibadan), Ph.D. (G.B. Pant, India). MASABE, MNSE, MNIAE, MNIFST, Life Member Indian Society of Environmental Scientists</p>
-                            <p class="card-text small"><strong>Specialization:</strong> Food Process Engineering, Root Crops Processing</p>
-                            <p class="card-text small"><strong>Email:</strong> ea.ajayi@ui.edu.ng</p>
-                            <p class="card-text small"><strong>Office:</strong> Room 103, Agricultural Engineering Building</p>
-                        </div>
+                    <div class="sc__body">
+                        <div class="sc__name">Prof. A. Y. Sangodoyin</div>
+                        <div class="sc__role prof">Professor</div>
+                        <div class="sc__divider prof"></div>
+                        <ul class="sc__info">
+                            <li class="spec"><i class="fas fa-microscope"></i><span>Water Resources Engineering, Environmental Management</span></li>
+                            <li class="qual"><i class="fas fa-graduation-cap"></i><span>B.Sc. (Ibadan), M.Sc. Water Resources, Ph.D. Civil Engr. Birmingham, R. Engr. (COREN)</span></li>
+                            <li class="room"><i class="fas fa-door-open"></i><span>Room 102, Agricultural Engineering Building</span></li>
+                        </ul>
                     </div>
-                </div>
-                
-                <!-- Prof. A. I. Bamgboye -->
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="staff-card card shadow-sm h-100">
-                        <div class="card-body text-center">
-                            <div class="staff-avatar mb-3">
-                                <img src="{{ url_for('static', filename='images/staff/bami.png') }}" alt="Prof. Bamgboye" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #ffc107;">
-                            </div>
-                            <h5 class="card-title">Prof. A. I. Bamgboye</h5>
-                            <p class="text-muted mb-2">Professor</p>
-                            <p class="card-text small"><strong>Qualifications:</strong> B.Sc. Agricultural Engineering, M. Sc. Crop Processing and Storage, Ph.D. Farm Power and Machinery (Ibadan) M.N.I.A.E., M.N.S.E., Reg. Engr (COREN)</p>
-                            <p class="card-text small"><strong>Specialization:</strong> Farm Power and Machinery, Crop Processing</p>
-                            <p class="card-text small"><strong>Email:</strong> ai.bamgboye@ui.edu.ng</p>
-                            <p class="card-text small"><strong>Office:</strong> Room 104, Agricultural Engineering Building</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Prof. A. O. Raji -->
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="staff-card card shadow-sm h-100">
-                        <div class="card-body text-center">
-                            <div class="staff-avatar mb-3">
-                                <img src="{{ url_for('static', filename='images/staff/raji.png') }}" alt="Prof. Raji" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #dc3545;">
-                            </div>
-                            <h5 class="card-title">Prof. A. O. Raji</h5>
-                            <p class="text-muted mb-2">Professor</p>
-                            <p class="card-text small"><strong>Qualifications:</strong> B.Sc. (Hons), M.Sc. (Ibadan), Ph.D. (Newcastle-upon-Tyne) M.N.I.A.E., M.N.S.E., M.A.S.A.B.E., M.N.I.F.S.T., Regd. Engr. (COREN)</p>
-                            <p class="card-text small"><strong>Specialization:</strong> Food Engineering, Post-Harvest Technology</p>
-                            <p class="card-text small"><strong>Email:</strong> ao.raji@ui.edu.ng</p>
-                            <p class="card-text small"><strong>Office:</strong> Room 105, Agricultural Engineering Building</p>
-                        </div>
+                    <div class="sc__footer">
+                        <a href="mailto:ay.sangodoyin@ui.edu.ng" class="sc__email-btn"><i class="fas fa-envelope"></i>ay.sangodoyin@ui.edu.ng</a>
                     </div>
                 </div>
 
-                <!-- Prof. A. K. Aremu -->
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="staff-card card shadow-sm h-100">
-                        <div class="card-body text-center">
-                            <div class="staff-avatar mb-3">
-                                <img src="{{ url_for('static', filename='images/staff/aremu.png') }}" alt="Prof. Aremu" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #6f42c1;">
-                            </div>
-                            <h5 class="card-title">Prof. A. K. Aremu</h5>
-                            <p class="text-muted mb-2">Professor</p>
-                            <p class="card-text small"><strong>Qualifications:</strong> B.Sc. (Hons), M.Sc., Ph.D. Agric. Engineering (Ibadan). MNIAE, MNSE, Reg Engr (COREN)</p>
-                            <p class="card-text small"><strong>Specialization:</strong> Soil and Water Engineering, Environmental Systems</p>
-                            <p class="card-text small"><strong>Email:</strong> ak.aremu@ui.edu.ng</p>
-                            <p class="card-text small"><strong>Office:</strong> Room 106, Agricultural Engineering Building</p>
+                <!-- Ajayi -->
+                <div class="sc fu">
+                    <div class="sc__top prof">
+                        <div class="sc__img-wrap">
+                            <img src="{{ url_for('static', filename='images/staff/Ajayi.jpeg') }}" alt="Prof. Ajayi" class="sc__img">
+                            <div class="sc__rank-dot">P</div>
                         </div>
+                    </div>
+                    <div class="sc__body">
+                        <div class="sc__name">Prof. E. A. Ajayi</div>
+                        <div class="sc__role prof">Professor</div>
+                        <div class="sc__divider prof"></div>
+                        <ul class="sc__info">
+                            <li class="spec"><i class="fas fa-microscope"></i><span>Food Process Engineering, Root Crops Processing</span></li>
+                            <li class="qual"><i class="fas fa-graduation-cap"></i><span>B.Sc., M.Sc. (Ibadan), Ph.D. (G.B. Pant, India). MASABE, MNSE, MNIAE, Reg Engr (COREN)</span></li>
+                            <li class="room"><i class="fas fa-door-open"></i><span>Room 103, Agricultural Engineering Building</span></li>
+                        </ul>
+                    </div>
+                    <div class="sc__footer">
+                        <a href="mailto:ea.ajayi@ui.edu.ng" class="sc__email-btn"><i class="fas fa-envelope"></i>ea.ajayi@ui.edu.ng</a>
                     </div>
                 </div>
 
-                <!-- Prof. Y. Mijinyawa -->
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="staff-card card shadow-sm h-100">
-                        <div class="card-body text-center">
-                            <div class="staff-avatar mb-3">
-                                <img src="{{ url_for('static', filename='images/staff/mijin.png') }}" alt="Prof. Mijinyawa" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #20c997;">
-                            </div>
-                            <h5 class="card-title">Prof. Y. Mijinyawa</h5>
-                            <p class="text-muted mb-2">Professor</p>
-                            <p class="card-text small"><strong>Qualifications:</strong> B.Sc., M.Sc., Ph.D. Agric. Engrg. (Ibadan) FNIAE, MNSE, MWASAE, MASAE, R. Engr.(COREN)</p>
-                            <p class="card-text small"><strong>Specialization:</strong> Agricultural Systems Engineering, Mechanization</p>
-                            <p class="card-text small"><strong>Email:</strong> y.mijinyawa@ui.edu.ng</p>
-                            <p class="card-text small"><strong>Office:</strong> Room 107, Agricultural Engineering Building</p>
+                <!-- Bamgboye -->
+                <div class="sc fu">
+                    <div class="sc__top prof">
+                        <div class="sc__img-wrap">
+                            <img src="{{ url_for('static', filename='images/staff/bami.png') }}" alt="Prof. Bamgboye" class="sc__img">
+                            <div class="sc__rank-dot">P</div>
                         </div>
                     </div>
+                    <div class="sc__body">
+                        <div class="sc__name">Prof. A. I. Bamgboye</div>
+                        <div class="sc__role prof">Professor</div>
+                        <div class="sc__divider prof"></div>
+                        <ul class="sc__info">
+                            <li class="spec"><i class="fas fa-microscope"></i><span>Farm Power &amp; Machinery, Crop Processing</span></li>
+                            <li class="qual"><i class="fas fa-graduation-cap"></i><span>B.Sc. Agric. Engr., M.Sc. Crop Processing, Ph.D. Farm Power (Ibadan). M.N.I.A.E., M.N.S.E., Reg Engr (COREN)</span></li>
+                            <li class="room"><i class="fas fa-door-open"></i><span>Room 104, Agricultural Engineering Building</span></li>
+                        </ul>
+                    </div>
+                    <div class="sc__footer">
+                        <a href="mailto:ai.bamgboye@ui.edu.ng" class="sc__email-btn"><i class="fas fa-envelope"></i>ai.bamgboye@ui.edu.ng</a>
+                    </div>
                 </div>
+
+                <!-- Raji -->
+                <div class="sc fu">
+                    <div class="sc__top prof">
+                        <div class="sc__img-wrap">
+                            <img src="{{ url_for('static', filename='images/staff/raji.png') }}" alt="Prof. Raji" class="sc__img">
+                            <div class="sc__rank-dot">P</div>
+                        </div>
+                    </div>
+                    <div class="sc__body">
+                        <div class="sc__name">Prof. A. O. Raji</div>
+                        <div class="sc__role prof">Professor</div>
+                        <div class="sc__divider prof"></div>
+                        <ul class="sc__info">
+                            <li class="spec"><i class="fas fa-microscope"></i><span>Food Engineering, Post-Harvest Technology</span></li>
+                            <li class="qual"><i class="fas fa-graduation-cap"></i><span>B.Sc., M.Sc. (Ibadan), Ph.D. (Newcastle-upon-Tyne). M.N.I.A.E., M.N.S.E., Regd. Engr. (COREN)</span></li>
+                            <li class="room"><i class="fas fa-door-open"></i><span>Room 105, Agricultural Engineering Building</span></li>
+                        </ul>
+                    </div>
+                    <div class="sc__footer">
+                        <a href="mailto:ao.raji@ui.edu.ng" class="sc__email-btn"><i class="fas fa-envelope"></i>ao.raji@ui.edu.ng</a>
+                    </div>
+                </div>
+
+                <!-- Aremu -->
+                <div class="sc fu">
+                    <div class="sc__top prof">
+                        <div class="sc__img-wrap">
+                            <img src="{{ url_for('static', filename='images/staff/aremu.png') }}" alt="Prof. Aremu" class="sc__img">
+                            <div class="sc__rank-dot">P</div>
+                        </div>
+                    </div>
+                    <div class="sc__body">
+                        <div class="sc__name">Prof. A. K. Aremu</div>
+                        <div class="sc__role prof">Professor</div>
+                        <div class="sc__divider prof"></div>
+                        <ul class="sc__info">
+                            <li class="spec"><i class="fas fa-microscope"></i><span>Soil &amp; Water Engineering, Environmental Systems</span></li>
+                            <li class="qual"><i class="fas fa-graduation-cap"></i><span>B.Sc., M.Sc., Ph.D. Agric. Engineering (Ibadan). MNIAE, MNSE, Reg Engr (COREN)</span></li>
+                            <li class="room"><i class="fas fa-door-open"></i><span>Room 106, Agricultural Engineering Building</span></li>
+                        </ul>
+                    </div>
+                    <div class="sc__footer">
+                        <a href="mailto:ak.aremu@ui.edu.ng" class="sc__email-btn"><i class="fas fa-envelope"></i>ak.aremu@ui.edu.ng</a>
+                    </div>
+                </div>
+
+                <!-- Mijinyawa -->
+                <div class="sc fu">
+                    <div class="sc__top prof">
+                        <div class="sc__img-wrap">
+                            <img src="{{ url_for('static', filename='images/staff/mijin.png') }}" alt="Prof. Mijinyawa" class="sc__img">
+                            <div class="sc__rank-dot">P</div>
+                        </div>
+                    </div>
+                    <div class="sc__body">
+                        <div class="sc__name">Prof. Y. Mijinyawa</div>
+                        <div class="sc__role prof">Professor</div>
+                        <div class="sc__divider prof"></div>
+                        <ul class="sc__info">
+                            <li class="spec"><i class="fas fa-microscope"></i><span>Agricultural Systems Engineering, Mechanization</span></li>
+                            <li class="qual"><i class="fas fa-graduation-cap"></i><span>B.Sc., M.Sc., Ph.D. Agric. Engrg. (Ibadan). FNIAE, MNSE, MWASAE, R. Engr.(COREN)</span></li>
+                            <li class="room"><i class="fas fa-door-open"></i><span>Room 107, Agricultural Engineering Building</span></li>
+                        </ul>
+                    </div>
+                    <div class="sc__footer">
+                        <a href="mailto:y.mijinyawa@ui.edu.ng" class="sc__email-btn"><i class="fas fa-envelope"></i>y.mijinyawa@ui.edu.ng</a>
+                    </div>
+                </div>
+
+            </div><!-- /staff-grid -->
+        </div>
+    </section>
+
+    <!-- wave -->
+    <div class="wave" style="background:linear-gradient(160deg,var(--cream-alt),var(--cream-dk));">
+        <svg viewBox="0 0 1440 55" preserveAspectRatio="none" style="width:100%;height:55px;">
+            <path d="M0,0 Q720,55 1440,0 L1440,55 L0,55 Z" fill="var(--cream)"/>
+        </svg>
+    </div>
+
+    <!-- ============================================================
+         SENIOR LECTURERS & LECTURERS
+    ============================================================ -->
+    <section id="lecturers">
+        <div class="dot-bg" style="opacity:.04"></div>
+        <div class="container position-relative">
+            <div class="text-center mb-5">
+                <h2 class="section-title">Senior Lecturers &amp; Lecturers</h2>
+                <div class="title-underline"></div>
+                <p class="section-lead">Dedicated faculty committed to excellence in teaching and research.</p>
+            </div>
+
+            <div class="staff-grid" style="grid-template-columns:repeat(3,1fr);max-width:900px;margin:0 auto;">
+
+                <!-- Oyefeso -->
+                <div class="sc fu">
+                    <div class="sc__top senior">
+                        <div class="sc__img-wrap">
+                            <img src="{{ url_for('static', filename='images/staff/oyefeso.png') }}" alt="Dr. Oyefeso" class="sc__img">
+                            <div class="sc__rank-dot" style="background:var(--blue)">SL</div>
+                        </div>
+                    </div>
+                    <div class="sc__body">
+                        <div class="sc__name">Dr. B. O. Oyefeso</div>
+                        <div class="sc__role senior">Senior Lecturer</div>
+                        <div class="sc__divider senior"></div>
+                        <ul class="sc__info">
+                            <li class="spec"><i class="fas fa-microscope"></i><span>Environmental Engineering, Waste Management</span></li>
+                            <li class="qual"><i class="fas fa-graduation-cap"></i><span>B.Sc., M.Sc., Ph.D. Agric. &amp; Env. Engrg. (Ibadan). MNIAE, MNSE, MASABE, Reg. Engr. (COREN)</span></li>
+                            <li class="room"><i class="fas fa-door-open"></i><span>Room 108, Agricultural Engineering Building</span></li>
+                        </ul>
+                    </div>
+                    <div class="sc__footer">
+                        <a href="mailto:bo.oyefeso@ui.edu.ng" class="sc__email-btn"><i class="fas fa-envelope"></i>bo.oyefeso@ui.edu.ng</a>
+                    </div>
+                </div>
+
+                <!-- Alabi -->
+                <div class="sc fu">
+                    <div class="sc__top lect">
+                        <div class="sc__img-wrap">
+                            <img src="{{ url_for('static', filename='images/staff/alabi.png') }}" alt="Dr. Alabi" class="sc__img">
+                            <div class="sc__rank-dot" style="background:var(--gold);color:var(--green-deep)">L</div>
+                        </div>
+                    </div>
+                    <div class="sc__body">
+                        <div class="sc__name">Dr. H. A. Alabi</div>
+                        <div class="sc__role lect">Lecturer</div>
+                        <div class="sc__divider lect"></div>
+                        <ul class="sc__info">
+                            <li class="spec"><i class="fas fa-microscope"></i><span>Agricultural Machinery Design, Automation</span></li>
+                            <li class="qual"><i class="fas fa-graduation-cap"></i><span>B.Eng. (FUTA), M.Sc. Agric. &amp; Env. Engrg. (Ibadan). MNIAE, MASABE, Reg. Engr. (COREN)</span></li>
+                            <li class="room"><i class="fas fa-door-open"></i><span>Room 109, Agricultural Engineering Building</span></li>
+                        </ul>
+                    </div>
+                    <div class="sc__footer">
+                        <a href="mailto:ha.alabi@ui.edu.ng" class="sc__email-btn"><i class="fas fa-envelope"></i>ha.alabi@ui.edu.ng</a>
+                    </div>
+                </div>
+
+                <!-- Kolajo -->
+                <div class="sc fu">
+                    <div class="sc__top engr">
+                        <div class="sc__img-wrap">
+                            <img src="{{ url_for('static', filename='images/staff/kola.png') }}" alt="Engr. Kolajo" class="sc__img">
+                            <div class="sc__rank-dot" style="background:#6f42c1">E</div>
+                        </div>
+                    </div>
+                    <div class="sc__body">
+                        <div class="sc__name">Engr. O. O. Kolajo</div>
+                        <div class="sc__role engr">Technical Engineer</div>
+                        <div class="sc__divider engr"></div>
+                        <ul class="sc__info">
+                            <li class="spec"><i class="fas fa-microscope"></i><span>Laboratory Management, Equipment Maintenance</span></li>
+                            <li class="qual"><i class="fas fa-graduation-cap"></i><span>B.Tech. (LAUTECH), M.Sc. (Ibadan), Reg. Engr. (COREN)</span></li>
+                            <li class="room"><i class="fas fa-door-open"></i><span>Room 110, Agricultural Engineering Building</span></li>
+                        </ul>
+                    </div>
+                    <div class="sc__footer">
+                        <a href="mailto:oo.kolajo@ui.edu.ng" class="sc__email-btn"><i class="fas fa-envelope"></i>oo.kolajo@ui.edu.ng</a>
+                    </div>
+                </div>
+
             </div>
         </div>
     </section>
 
-    <!-- Senior Lecturers & Lecturers -->
-    <section class="py-5 bg-light">
+    <!-- wave -->
+    <div class="wave" style="background:var(--cream);">
+        <svg viewBox="0 0 1440 55" preserveAspectRatio="none" style="width:100%;height:55px;">
+            <path d="M0,55 L0,28 Q360,0 720,28 Q1080,55 1440,28 L1440,55 Z" fill="var(--cream-alt)"/>
+        </svg>
+    </div>
+
+    <!-- ============================================================
+         RESEARCH AREAS
+    ============================================================ -->
+    <section id="research">
         <div class="container">
             <div class="text-center mb-5">
-                <h2 class="section-title">Senior Lecturers & Lecturers</h2>
+                <h2 class="section-title">Research Areas &amp; Expertise</h2>
                 <div class="title-underline"></div>
-                <p class="lead">Dedicated faculty committed to excellence in teaching and research</p>
+                <p class="section-lead">Our faculty's diverse research interests and specializations.</p>
             </div>
-            
-            <div class="row">
-                <!-- Dr. B. O. Oyefeso -->
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="staff-card card shadow-sm h-100">
-                        <div class="card-body text-center">
-                            <div class="staff-avatar mb-3">
-                                <img src="{{ url_for('static', filename='images/staff/oyefeso.png') }}" alt="Dr. Oyefeso" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #fd7e14;">
-                            </div>
-                            <h5 class="card-title">Dr. B. O. Oyefeso</h5>
-                            <p class="text-muted mb-2">Senior Lecturer</p>
-                            <p class="card-text small"><strong>Qualifications:</strong> B.Sc. (Hons.), M.Sc., Ph.D. Agric. and Env. Engrg. (Ibadan). MNIAE, MNSE, MASABE, Reg. Engr. (COREN)</p>
-                            <p class="card-text small"><strong>Specialization:</strong> Environmental Engineering, Waste Management</p>
-                            <p class="card-text small"><strong>Email:</strong> bo.oyefeso@ui.edu.ng</p>
-                            <p class="card-text small"><strong>Office:</strong> Room 108, Agricultural Engineering Building</p>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Dr. H. A. Alabi -->
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="staff-card card shadow-sm h-100">
-                        <div class="card-body text-center">
-                            <div class="staff-avatar mb-3">
-                                <img src="{{ url_for('static', filename='images/staff/alabi.png') }}" alt="Dr. Alabi" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #198754;">
-                            </div>
-                            <h5 class="card-title">Dr. H. A. Alabi</h5>
-                            <p class="text-muted mb-2">Lecturer</p>
-                            <p class="card-text small"><strong>Qualifications:</strong> B.Eng. (Hons.) Agric. Engrg. (FUTA), M.Sc., Agric. and Env. Engrg. (Ibadan). MNIAE, MASABE, Reg. Engr. (COREN)</p>
-                            <p class="card-text small"><strong>Specialization:</strong> Agricultural Machinery Design, Automation</p>
-                            <p class="card-text small"><strong>Email:</strong> ha.alabi@ui.edu.ng</p>
-                            <p class="card-text small"><strong>Office:</strong> Room 109, Agricultural Engineering Building</p>
+            <div class="row g-4">
+                <div class="col-lg-6 fu">
+                    <div class="res-area-card">
+                        <div class="res-area-card__hd agric">
+                            <div class="hicon"><i class="fas fa-seedling"></i></div>
+                            <h5>Agricultural Engineering</h5>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-                <!-- Engr. O. O. Kolajo -->
-                <div class="col-lg-4 col-md-6 mb-4 mx-auto">
-                    <div class="staff-card card shadow-sm h-100">
-                        <div class="card-body text-center">
-                            <div class="staff-avatar mb-3">
-                                <img src="{{ url_for('static', filename='images/staff/kola.png') }}" alt="Engr. Kolajo" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #0d6efd;">
-                            </div>
-                            <h5 class="card-title">Engr. O. O. Kolajo</h5>
-                            <p class="text-muted mb-2">Technical Engineer</p>
-                            <p class="card-text small"><strong>Qualifications:</strong> B.Tech.(Hons) (LAUTECH), M.Sc., (Ibadan), Reg. Engr. (COREN)</p>
-                            <p class="card-text small"><strong>Specialization:</strong> Laboratory Management, Equipment Maintenance</p>
-                            <p class="card-text small"><strong>Email:</strong> oo.kolajo@ui.edu.ng</p>
-                            <p class="card-text small"><strong>Office:</strong> Room 110, Agricultural Engineering Building</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Technical Staff -->
-    <section class="py-5">
-        <div class="container">
-            <div class="text-center mb-5">
-                <h2 class="section-title">Technical Staff</h2>
-                <div class="title-underline"></div>
-                <p class="lead">Supporting academic excellence through technical expertise</p>
-            </div>
-            
-            -------------------------------
-    </section>
-
-    <!-- Research Areas and Expertise -->
-    <section class="py-5 bg-light">
-        <div class="container">
-            <div class="text-center mb-5">
-                <h2 class="section-title">Research Areas & Expertise</h2>
-                <div class="title-underline"></div>
-                <p class="lead">Our faculty's diverse research interests and specializations</p>
-            </div>
-            
-            <div class="row">
-                <div class="col-lg-6 mb-4">
-                    <div class="card shadow-sm h-100">
-                        <div class="card-header bg-success text-white">
-                            <h5 class="mb-0"><i class="fas fa-seedling me-2"></i>Agricultural Engineering</h5>
-                        </div>
-                        <div class="card-body">
-                            <ul class="list-unstyled">
-                                <li><i class="fas fa-check text-success me-2"></i>Farm Power and Machinery</li>
-                                <li><i class="fas fa-check text-success me-2"></i>Precision Agriculture</li>
-                                <li><i class="fas fa-check text-success me-2"></i>Agricultural Systems Design</li>
-                                <li><i class="fas fa-check text-success me-2"></i>Post-Harvest Technology</li>
-                                <li><i class="fas fa-check text-success me-2"></i>Food Process Engineering</li>
-                                <li><i class="fas fa-check text-success me-2"></i>Agricultural Mechanization</li>
+                        <div class="res-area-card__body">
+                            <ul class="ra-list">
+                                <li><span class="dot green"></span>Farm Power and Machinery</li>
+                                <li><span class="dot green"></span>Precision Agriculture</li>
+                                <li><span class="dot green"></span>Agricultural Systems Design</li>
+                                <li><span class="dot green"></span>Post-Harvest Technology</li>
+                                <li><span class="dot green"></span>Food Process Engineering</li>
+                                <li><span class="dot green"></span>Agricultural Mechanization</li>
                             </ul>
                         </div>
                     </div>
                 </div>
-                
-                <div class="col-lg-6 mb-4">
-                    <div class="card shadow-sm h-100">
-                        <div class="card-header bg-info text-white">
-                            <h5 class="mb-0"><i class="fas fa-leaf me-2"></i>Environmental Engineering</h5>
+                <div class="col-lg-6 fu">
+                    <div class="res-area-card">
+                        <div class="res-area-card__hd env">
+                            <div class="hicon"><i class="fas fa-leaf"></i></div>
+                            <h5>Environmental Engineering</h5>
                         </div>
-                        <div class="card-body">
-                            <ul class="list-unstyled">
-                                <li><i class="fas fa-check text-info me-2"></i>Water Resources Management</li>
-                                <li><i class="fas fa-check text-info me-2"></i>Irrigation and Drainage Systems</li>
-                                <li><i class="fas fa-check text-info me-2"></i>Environmental Impact Assessment</li>
-                                <li><i class="fas fa-check text-info me-2"></i>Waste Management Systems</li>
-                                <li><i class="fas fa-check text-info me-2"></i>Soil and Water Conservation</li>
-                                <li><i class="fas fa-check text-info me-2"></i>Renewable Energy Applications</li>
+                        <div class="res-area-card__body">
+                            <ul class="ra-list">
+                                <li><span class="dot blue"></span>Water Resources Management</li>
+                                <li><span class="dot blue"></span>Irrigation and Drainage Systems</li>
+                                <li><span class="dot blue"></span>Environmental Impact Assessment</li>
+                                <li><span class="dot blue"></span>Waste Management Systems</li>
+                                <li><span class="dot blue"></span>Soil and Water Conservation</li>
+                                <li><span class="dot blue"></span>Renewable Energy Applications</li>
                             </ul>
                         </div>
                     </div>
@@ -362,106 +866,128 @@
         </div>
     </section>
 
-    <!-- Contact Information -->
-    <section class="py-5">
-        <div class="container">
+    <!-- wave -->
+    <div class="wave" style="background:linear-gradient(160deg,var(--cream-alt),var(--cream-dk));">
+        <svg viewBox="0 0 1440 55" preserveAspectRatio="none" style="width:100%;height:55px;">
+            <path d="M0,0 Q720,55 1440,0 L1440,55 L0,55 Z" fill="var(--cream)"/>
+        </svg>
+    </div>
+
+    <!-- ============================================================
+         CONNECT
+    ============================================================ -->
+    <section id="connect">
+        <div class="dot-bg" style="opacity:.04"></div>
+        <div class="container position-relative">
             <div class="text-center mb-5">
                 <h2 class="section-title">Get in Touch with Our Faculty</h2>
                 <div class="title-underline"></div>
-                <p class="lead">Connect with our faculty for research collaboration and academic inquiries</p>
+                <p class="section-lead">Connect with our faculty for research collaboration and academic inquiries.</p>
             </div>
-            
-            <div class="row">
-                <div class="col-lg-4 mb-4">
-                    <div class="text-center p-4 border rounded bg-light">
-                        <i class="fas fa-envelope fa-3x text-primary mb-3"></i>
+
+            <div class="row g-4">
+                <div class="col-lg-4 fu">
+                    <div class="connect-card">
+                        <div class="connect-icon email"><i class="fas fa-envelope"></i></div>
                         <h5>Email Communications</h5>
-                        <p class="small">Faculty are available for email correspondence regarding academic and research matters.</p>
-                        <p class="text-muted small">Response time: 24-48 hours</p>
+                        <p>Faculty are available for email correspondence regarding academic and research matters. Use individual emails listed on each profile above.</p>
+                        <span class="connect-tag"><i class="fas fa-clock me-1"></i>Response: 24–48 hours</span>
                     </div>
                 </div>
-                
-                <div class="col-lg-4 mb-4">
-                    <div class="text-center p-4 border rounded bg-light">
-                        <i class="fas fa-calendar-alt fa-3x text-success mb-3"></i>
+                <div class="col-lg-4 fu">
+                    <div class="connect-card">
+                        <div class="connect-icon hours"><i class="fas fa-calendar-alt"></i></div>
                         <h5>Office Hours</h5>
-                        <p class="small">Faculty members maintain regular office hours for student consultations and meetings.</p>
-                        <p class="text-muted small">Monday - Friday: 9:00 AM - 4:00 PM</p>
+                        <p>Faculty members maintain regular office hours for student consultations, academic advising, and scheduled meetings.</p>
+                        <span class="connect-tag"><i class="fas fa-sun me-1"></i>Mon – Fri: 9:00 AM – 4:00 PM</span>
                     </div>
                 </div>
-                
-                <div class="col-lg-4 mb-4">
-                    <div class="text-center p-4 border rounded bg-light">
-                        <i class="fas fa-handshake fa-3x text-info mb-3"></i>
+                <div class="col-lg-4 fu">
+                    <div class="connect-card">
+                        <div class="connect-icon collab"><i class="fas fa-handshake"></i></div>
                         <h5>Research Collaboration</h5>
-                        <p class="small">Open to collaborations with industry partners, researchers, and academic institutions.</p>
-                        <p class="text-muted small">Contact department for partnership opportunities</p>
+                        <p>Open to collaborations with industry partners, researchers, and academic institutions nationally and internationally.</p>
+                        <span class="connect-tag"><i class="fas fa-link me-1"></i>Contact department office</span>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="bg-dark text-white py-5">
+    <!-- wave -->
+    <div class="wave" style="background:var(--cream);">
+        <svg viewBox="0 0 1440 55" preserveAspectRatio="none" style="width:100%;height:55px;">
+            <path d="M0,55 L0,30 Q720,0 1440,30 L1440,55 Z" fill="#0a1a10"/>
+        </svg>
+    </div>
+
+    <!-- ============================================================
+         FOOTER
+    ============================================================ -->
+    <footer>
         <div class="container">
-            <div class="row">
-                <div class="col-lg-4 mb-4">
-                    <h5 class="text-success mb-3">Agricultural & Environmental Engineering</h5>
-                    <p class="small">Pioneering sustainable solutions for agriculture and environment through innovative engineering practices at the University of Ibadan.</p>
-                    <div class="social-links">
-                        <a href="#" class="text-white me-3"><i class="fab fa-facebook-f fa-lg"></i></a>
-                        <a href="#" class="text-white me-3"><i class="fab fa-twitter fa-lg"></i></a>
-                        <a href="#" class="text-white me-3"><i class="fab fa-linkedin-in fa-lg"></i></a>
-                        <a href="#" class="text-white"><i class="fab fa-instagram fa-lg"></i></a>
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="foot-brand">Agricultural &amp; Environmental Engineering</div>
+                    <p class="foot-desc">Pioneering sustainable solutions for agriculture and environment through innovative engineering practices at the University of Ibadan since 1972.</p>
+                    <div class="foot-social">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
                     </div>
                 </div>
-                <div class="col-lg-2 mb-4">
-                    <h6 class="text-success mb-3">Quick Links</h6>
-                    <ul class="list-unstyled small">
-                        <li><a href="{{ url_for('index') }}#about" class="text-light text-decoration-none">About Us</a></li>
-                        <li><a href="{{ url_for('staff') }}" class="text-light text-decoration-none">Faculty</a></li>
-                        <li><a href="{{ url_for('index') }}#programs" class="text-light text-decoration-none">Programs</a></li>
-                        <li><a href="{{ url_for('index') }}#resources" class="text-light text-decoration-none">Resources</a></li>
-                        <li><a href="{{ url_for('index') }}#contact" class="text-light text-decoration-none">Contact</a></li>
+                <div class="col-lg-2 col-md-6">
+                    <div class="foot-hd">Quick Links</div>
+                    <ul class="foot-links">
+                        <li><a href="{{ url_for('index') }}#about">About Us</a></li>
+                        <li><a href="{{ url_for('staff') }}">Faculty</a></li>
+                        <li><a href="{{ url_for('index') }}#programs">Programs</a></li>
+                        <li><a href="{{ url_for('index') }}#resources">Resources</a></li>
+                        <li><a href="{{ url_for('index') }}#contact">Contact</a></li>
                     </ul>
                 </div>
-                <div class="col-lg-3 mb-4">
-                    <h6 class="text-success mb-3">Academic Programs</h6>
-                    <ul class="list-unstyled small">
-                        <li>B.Eng Agricultural & Environmental Engineering</li>
-                        <li>M.Eng Agricultural & Environmental Engineering</li>
-                        <li>Ph.D Agricultural & Environmental Engineering</li>
+                <div class="col-lg-3 col-md-6">
+                    <div class="foot-hd">Academic Programs</div>
+                    <ul class="foot-links">
+                        <li><a href="{{ url_for('academic_program') }}">B.Eng Agricultural &amp; Env. Engineering</a></li>
+                        <li><a href="{{ url_for('academic_program') }}">M.Eng Agricultural &amp; Env. Engineering</a></li>
+                        <li><a href="{{ url_for('academic_program') }}">Ph.D Agricultural &amp; Env. Engineering</a></li>
+                        <li><a href="{{ url_for('payment') }}">Payment Portal</a></li>
+                        <li><a href="{{ url_for('students') }}">Student Portal</a></li>
                     </ul>
                 </div>
-                <div class="col-lg-3 mb-4">
-                    <h6 class="text-success mb-3">Contact Info</h6>
-                    <p class="small mb-1">
-                        <i class="fas fa-map-marker-alt me-2"></i>
-                        Faculty of Technology, University of Ibadan
-                    </p>
-                    <p class="small mb-1">
-                        <i class="fas fa-phone me-2"></i>
-                        +234-xxx-xxx-xxxx
-                    </p>
-                    <p class="small mb-1">
-                        <i class="fas fa-envelope me-2"></i>
-                        info.agric@ui.edu.ng
-                    </p>
+                <div class="col-lg-3 col-md-6">
+                    <div class="foot-hd">Contact Info</div>
+                    <div class="foot-ci"><i class="fas fa-map-marker-alt"></i><span>Faculty of Technology, University of Ibadan, Ibadan, Oyo State, Nigeria</span></div>
+                    <div class="foot-ci"><i class="fas fa-phone-alt"></i><span>+234-903-576-2341</span></div>
+                    <div class="foot-ci"><i class="fas fa-envelope"></i><span>info.agric@ui.edu.ng</span></div>
                 </div>
             </div>
-            <hr class="my-4">
-            <div class="row">
-                <div class="col-lg-12 text-center">
-                    <p class="small mb-0">
-                        &copy; 2025 AEE - All rights reserved. | Designed with excellence for academic distinction. - Emmyfest
-                    </p>
-                </div>
+            <div class="foot-bottom">
+                <p>&copy; 2026 AEE — Agricultural &amp; Environmental Engineering, University of Ibadan.
+                All rights reserved. | Designed with excellence for academic distinction —
+                <strong style="color:var(--green-light)">Emmyfest</strong></p>
             </div>
         </div>
     </footer>
 
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+    <script>
+        // Scroll fade-up
+        const obs = new IntersectionObserver(entries => {
+            entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.fu').forEach(el => obs.observe(el));
+
+        // Active nav
+        const navLinks = document.querySelectorAll('#navbar .nav-link');
+        navLinks.forEach(a => {
+            if (a.getAttribute('href') === window.location.pathname) a.classList.add('active');
+        });
+    </script>
 </body>
 </html>
