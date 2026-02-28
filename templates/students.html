@@ -17,6 +17,412 @@
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+        <style>
+        /* ═══════════════════════════════════════════════════
+           DESIGN TOKENS — identical to index.html
+        ═══════════════════════════════════════════════════ */
+        :root {
+            --blue:         #0d6efd;
+            --blue-dark:    #0a4fa0;
+            --green-deep:   #1a3d2b;
+            --green-mid:    #2d6a4f;
+            --green-accent: #40916c;
+            --green-light:  #74c69d;
+            --gold:         #d4a017;
+            --gold-light:   #f0c040;
+            --cream:        #f8f4ef;
+            --cream-alt:    #eaf4ef;
+            --cream-dark:   #ede8e0;
+            --charcoal:     #1c1c1e;
+            --muted:        #6b7280;
+            --white:        #ffffff;
+            --sh-sm:        0 2px 12px rgba(0,0,0,.07);
+            --sh-md:        0 8px 32px rgba(0,0,0,.12);
+            --sh-lg:        0 20px 60px rgba(0,0,0,.18);
+            --r:            12px;
+            --rl:           20px;
+            --ease:         cubic-bezier(.4,0,.2,1);
+        }
+
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+        html { scroll-behavior:smooth; }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--cream);
+            color: var(--charcoal);
+            line-height: 1.75;
+            overflow-x: hidden;
+        }
+        h1,h2,h3,h4,h5,h6 { font-family:'Playfair Display',serif; line-height:1.2; }
+        a { text-decoration:none; }
+
+        ::-webkit-scrollbar { width:6px; }
+        ::-webkit-scrollbar-track { background:#e8f0e9; }
+        ::-webkit-scrollbar-thumb { background:var(--green-accent); border-radius:4px; }
+
+        .flash-messages { position:fixed; top:80px; right:20px; z-index:9999; width:340px; }
+
+        /* Shared utilities */
+        .section-title {
+            font-family:'Playfair Display',serif;
+            font-size:clamp(1.9rem,3.5vw,2.75rem);
+            font-weight:700; color:var(--green-deep);
+        }
+        .title-underline {
+            width:60px; height:3px;
+            background:linear-gradient(90deg,var(--blue),var(--green-accent));
+            border-radius:3px; margin:10px auto 18px;
+        }
+        .section-lead { font-size:.97rem; color:var(--muted); max-width:560px; margin:0 auto; }
+
+        /* fade-up */
+        .fu { opacity:0; transform:translateY(26px); transition:opacity .6s var(--ease),transform .6s var(--ease); }
+        .fu.in { opacity:1; transform:translateY(0); }
+        .fu:nth-child(2){transition-delay:.08s}
+        .fu:nth-child(3){transition-delay:.16s}
+        .fu:nth-child(4){transition-delay:.24s}
+        .fu:nth-child(5){transition-delay:.32s}
+
+        /* dot-bg */
+        .dot-bg {
+            pointer-events:none; position:absolute; inset:0;
+            background-image:radial-gradient(var(--green-accent) 1px,transparent 1px);
+            background-size:26px 26px; opacity:.055;
+        }
+
+        /* wave */
+        .wave { line-height:0; }
+        .wave svg { display:block; }
+
+        /* ── HERO ── */
+        .hero-section {
+            background-image:url('/static/images/studentpic.jpg');
+            background-size:cover; background-position:center; background-repeat:no-repeat;
+        }
+        .hero-overlay {
+            background:linear-gradient(135deg,rgba(13,110,253,.68) 0%,rgba(10,55,25,.72) 100%);
+            padding-top:80px;
+        }
+        .hero-eyebrow {
+            display:inline-flex; align-items:center; gap:.5rem;
+            background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.22);
+            color:var(--gold-light); font-size:.72rem; font-weight:700;
+            letter-spacing:.13em; text-transform:uppercase;
+            padding:.4rem 1.1rem; border-radius:50px; margin-bottom:1.6rem;
+        }
+
+        /* ── QUICK ACCESS ── */
+        #quick-access { padding:80px 0; background:var(--cream); position:relative; }
+        #quick-access::before {
+            content:''; position:absolute; top:0; left:0; right:0; height:4px;
+            background:linear-gradient(90deg,var(--blue),var(--green-accent),var(--gold));
+        }
+        .qa-card {
+            border-radius:var(--rl); overflow:hidden; background:var(--white);
+            border:1px solid rgba(0,0,0,.06); box-shadow:var(--sh-sm); height:100%;
+            transition:transform .35s var(--ease),box-shadow .35s var(--ease);
+            display:flex; flex-direction:column;
+        }
+        .qa-card:hover { transform:translateY(-7px); box-shadow:var(--sh-md); }
+        .qa-card__top { padding:28px 24px 14px; display:flex; flex-direction:column; align-items:center; text-align:center; flex:1; }
+        .qa-icon {
+            width:62px; height:62px; border-radius:16px;
+            display:flex; align-items:center; justify-content:center; font-size:1.55rem;
+            margin-bottom:16px; transition:transform .3s var(--ease);
+        }
+        .qa-card:hover .qa-icon { transform:scale(1.08) rotate(-4deg); }
+        .qa-icon.blue  { background:linear-gradient(135deg,rgba(13,110,253,.12),rgba(13,110,253,.22)); color:var(--blue); }
+        .qa-icon.green { background:linear-gradient(135deg,rgba(45,106,79,.1),rgba(64,145,108,.22)); color:var(--green-mid); }
+        .qa-icon.teal  { background:linear-gradient(135deg,rgba(13,202,240,.1),rgba(13,202,240,.22)); color:#0891b2; }
+        .qa-icon.gold  { background:linear-gradient(135deg,rgba(212,160,23,.1),rgba(240,192,64,.22)); color:var(--gold); }
+        .qa-card__title { font-family:'Playfair Display',serif; font-size:1.05rem; font-weight:700; color:var(--green-deep); margin-bottom:8px; }
+        .qa-card__desc  { font-size:.83rem; color:var(--muted); line-height:1.6; }
+        .qa-card__foot  { padding:14px 24px 22px; display:flex; justify-content:center; }
+        .qa-btn {
+            display:inline-flex; align-items:center; gap:7px; padding:9px 20px;
+            border-radius:9px; font-size:.82rem; font-weight:600; border:none; text-decoration:none;
+            transition:all .3s var(--ease);
+        }
+        .qa-btn.blue  { background:var(--blue); color:#fff; }
+        .qa-btn.blue:hover  { background:var(--blue-dark); box-shadow:0 6px 18px rgba(13,110,253,.35); transform:translateY(-2px); color:#fff; }
+        .qa-btn.green { background:linear-gradient(135deg,var(--green-mid),var(--green-accent)); color:#fff; }
+        .qa-btn.green:hover { box-shadow:0 6px 18px rgba(45,106,79,.4); transform:translateY(-2px); color:#fff; }
+        .qa-btn.teal  { background:linear-gradient(135deg,#0891b2,#06b6d4); color:#fff; }
+        .qa-btn.teal:hover  { box-shadow:0 6px 18px rgba(8,145,178,.35); transform:translateY(-2px); color:#fff; }
+        .qa-btn.gold  { background:linear-gradient(135deg,var(--gold),var(--gold-light)); color:var(--green-deep); }
+        .qa-btn.gold:hover  { box-shadow:0 6px 18px rgba(212,160,23,.4); transform:translateY(-2px); }
+
+        /* ── NOTICES ── */
+        #notices { padding:80px 0; background:linear-gradient(160deg,var(--cream-alt) 0%,var(--cream-dark) 100%); }
+        .notice-wrap { border-radius:var(--rl); overflow:hidden; box-shadow:var(--sh-md); border:1px solid rgba(0,0,0,.06); }
+        .notice-wrap__hd {
+            background:linear-gradient(135deg,#b91c1c 0%,#dc2626 100%);
+            padding:18px 28px; display:flex; align-items:center; gap:10px; color:#fff;
+        }
+        .notice-wrap__hd h5 { font-size:1.15rem; margin:0; }
+        .notice-wrap__body { background:var(--white); padding:28px; }
+        .notice-item {
+            border-radius:var(--r); padding:18px 20px; margin-bottom:16px;
+            border-left:4px solid; background:var(--cream); transition:box-shadow .25s;
+        }
+        .notice-item:last-child { margin-bottom:0; }
+        .notice-item:hover { box-shadow:var(--sh-sm); }
+        .notice-item.danger  { border-color:#dc2626; }
+        .notice-item.warning { border-color:var(--gold); }
+        .notice-item.info    { border-color:#0891b2; }
+        .notice-item.success { border-color:var(--green-accent); }
+        .ni-head { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px; gap:12px; }
+        .ni-title { font-size:.9rem; font-weight:700; margin:0; }
+        .ni-title.danger  { color:#dc2626; }
+        .ni-title.warning { color:var(--gold); }
+        .ni-title.info    { color:#0891b2; }
+        .ni-title.success { color:var(--green-mid); }
+        .ni-badge { font-size:.64rem; font-weight:700; padding:3px 10px; border-radius:50px; white-space:nowrap; flex-shrink:0; }
+        .ni-badge.danger  { background:#fef2f2; color:#dc2626; border:1px solid #fca5a5; }
+        .ni-badge.warning { background:#fffbeb; color:var(--gold); border:1px solid #fde68a; }
+        .ni-badge.info    { background:#f0f9ff; color:#0891b2; border:1px solid #bae6fd; }
+        .ni-badge.success { background:#f0fdf4; color:var(--green-mid); border:1px solid #bbf7d0; }
+        .ni-meta { font-size:.78rem; color:var(--muted); margin-bottom:5px; }
+        .ni-meta strong { color:var(--charcoal); }
+        .ni-body { font-size:.84rem; color:var(--muted); line-height:1.65; margin:0; }
+
+        /* Timeline */
+        .timeline-card {
+            background:linear-gradient(160deg,var(--green-deep) 0%,#0a1f14 100%);
+            border-radius:var(--rl); padding:28px 24px; color:#fff;
+            box-shadow:var(--sh-md); position:sticky; top:90px;
+        }
+        .timeline-card h5 { font-size:1.1rem; color:var(--gold-light); margin-bottom:22px; padding-bottom:14px; border-bottom:1px solid rgba(255,255,255,.1); }
+        .tl-item { display:grid; grid-template-columns:52px 1fr; gap:14px; margin-bottom:18px; position:relative; }
+        .tl-item:not(:last-child)::before {
+            content:''; position:absolute; left:25px; top:38px; bottom:-12px;
+            width:1px; background:rgba(255,255,255,.12);
+        }
+        .tl-date { text-align:center; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12); border-radius:9px; padding:5px 3px; }
+        .tl-date .d { font-size:.9rem; font-weight:700; color:var(--gold-light); display:block; line-height:1; }
+        .tl-date .m { font-size:.58rem; color:rgba(255,255,255,.45); text-transform:uppercase; letter-spacing:.06em; }
+        .tl-content h6 { font-size:.84rem; font-weight:700; color:#fff; margin-bottom:2px; }
+        .tl-content p  { font-size:.73rem; color:rgba(255,255,255,.5); margin:0; line-height:1.4; }
+              /* ══════════════════════════════════════════════════
+           STUDENT LEADERS
+        ══════════════════════════════════════════════════ */
+        #student-leaders { padding:88px 0; background:var(--cream); position:relative; }
+
+        .leaders-wrap { border-radius:var(--rl); overflow:hidden; box-shadow:var(--sh-md); border:1px solid rgba(0,0,0,.06); }
+        .leaders-hd {
+            background:linear-gradient(135deg,var(--green-deep) 0%,var(--green-mid) 100%);
+            padding:22px 32px; display:flex; align-items:center; gap:14px;
+        }
+        .leaders-hd .hicon {
+            width:42px; height:42px; background:rgba(255,255,255,.13); border-radius:11px;
+            display:flex; align-items:center; justify-content:center; font-size:1.15rem; color:var(--gold-light);
+        }
+        .leaders-hd h4 { font-size:1.3rem; color:#fff; margin:0; }
+        .leaders-hd p  { font-size:.74rem; color:rgba(255,255,255,.55); margin:0; }
+        .leaders-body  { background:var(--white); padding:32px; }
+
+        /* President featured */
+        .president-card {
+            background:linear-gradient(135deg,rgba(26,61,43,.06) 0%,rgba(212,160,23,.08) 100%);
+            border-radius:var(--rl); border:1.5px solid rgba(212,160,23,.25);
+            padding:28px 32px; display:flex; align-items:center; gap:28px;
+            margin-bottom:32px; position:relative; overflow:hidden;
+        }
+        .president-card::before {
+            content:''; position:absolute; top:-30px; right:-30px;
+            width:180px; height:180px; border-radius:50%;
+            background:radial-gradient(circle,rgba(212,160,23,.08),transparent 70%);
+        }
+        .president-crown { position:absolute; top:14px; right:20px; font-size:1.4rem; color:var(--gold-light); opacity:.6; }
+
+        /* Avatars */
+        .leader-avatar { position:relative; flex-shrink:0; }
+        .leader-avatar img {
+            width:110px; height:110px; border-radius:50%; object-fit:cover;
+            border:3px solid var(--gold-light); box-shadow:0 6px 20px rgba(212,160,23,.3); display:block;
+        }
+        .leader-avatar img.sm { width:80px; height:80px; border-color:rgba(64,145,108,.5); box-shadow:0 4px 14px rgba(45,106,79,.2); }
+
+        /* Fallback initials circle shown when image missing */
+        .av-fb {
+            border-radius:50%; display:none; align-items:center; justify-content:center;
+            font-family:'Playfair Display',serif; font-weight:700; color:#fff;
+            background:linear-gradient(135deg,var(--green-mid),var(--green-accent));
+        }
+        .av-fb.lg { width:110px; height:110px; font-size:2.4rem; border:3px solid var(--gold-light); box-shadow:0 6px 20px rgba(212,160,23,.3); }
+        .av-fb.sm { width:80px;  height:80px;  font-size:1.8rem; border:2.5px solid rgba(64,145,108,.5); box-shadow:0 4px 14px rgba(45,106,79,.2); }
+
+        .av-badge {
+            position:absolute; bottom:4px; right:4px;
+            background:var(--gold); color:var(--green-deep);
+            width:24px; height:24px; border-radius:50%;
+            display:flex; align-items:center; justify-content:center;
+            font-size:.6rem; border:2px solid #fff;
+        }
+
+        .leader-info { flex:1; }
+        .leader-role { font-size:.68rem; font-weight:700; letter-spacing:.11em; text-transform:uppercase; color:var(--gold); margin-bottom:4px; }
+        .leader-name { font-family:'Playfair Display',serif; font-size:1.55rem; font-weight:700; color:var(--green-deep); margin-bottom:4px; }
+        .leader-level{ font-size:.82rem; color:var(--muted); margin-bottom:10px; }
+        .leader-quote { font-size:.83rem; color:var(--charcoal); font-style:italic; border-left:3px solid var(--gold-light); padding-left:12px; line-height:1.6; }
+
+        /* Leader grid cards */
+        .leaders-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:20px; }
+        .leader-card {
+            background:var(--cream); border-radius:var(--rl); border:1px solid rgba(0,0,0,.07);
+            padding:24px 20px; text-align:center;
+            transition:transform .35s var(--ease),box-shadow .35s var(--ease),background .3s;
+        }
+        .leader-card:hover { transform:translateY(-6px); box-shadow:var(--sh-md); background:var(--white); }
+        .leader-card .card-av { margin:0 auto 14px; position:relative; width:fit-content; }
+        .leader-card img { width:80px; height:80px; border-radius:50%; object-fit:cover; border:2.5px solid rgba(64,145,108,.5); box-shadow:0 4px 14px rgba(45,106,79,.2); display:block; }
+        .lc-role  { font-size:.65rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--green-accent); margin-bottom:4px; }
+        .lc-name  { font-family:'Playfair Display',serif; font-size:.98rem; font-weight:700; color:var(--green-deep); margin-bottom:3px; }
+        .lc-level { font-size:.74rem; color:var(--muted); margin-bottom:10px; }
+        .lc-badge { display:inline-block; background:rgba(13,110,253,.08); border:1px solid rgba(13,110,253,.2); color:var(--blue); font-size:.63rem; font-weight:700; padding:3px 10px; border-radius:50px; }
+
+        /* Org grid */
+        .org-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:32px; }
+        .org-card { background:var(--cream); border-radius:var(--r); border:1px solid rgba(0,0,0,.07); padding:20px; transition:box-shadow .3s,transform .3s var(--ease); }
+        .org-card:hover { box-shadow:var(--sh-sm); transform:translateY(-3px); }
+        .org-icon { width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1rem; margin-bottom:10px; }
+        .org-card h6 { font-size:.92rem; font-weight:700; color:var(--green-deep); margin-bottom:5px; }
+        .org-card p  { font-size:.8rem; color:var(--muted); margin-bottom:6px; line-height:1.55; }
+        .org-meta    { font-size:.74rem; color:var(--blue); font-weight:600; }
+
+        /* ── EXAM ── */
+        #exam-schedule { padding:80px 0; background:linear-gradient(160deg,var(--cream-alt) 0%,var(--cream-dark) 100%); }
+        .exam-wrap { border-radius:var(--rl); overflow:hidden; box-shadow:var(--sh-md); border:1px solid rgba(0,0,0,.06); }
+        .exam-hd {
+            background:linear-gradient(135deg,var(--green-mid) 0%,var(--green-accent) 100%);
+            padding:20px 28px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;
+        }
+        .exam-hd h5 { font-size:1.1rem; color:#fff; margin:0; }
+        .exam-session { background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.25); color:#fff; font-size:.72rem; font-weight:700; padding:5px 14px; border-radius:50px; letter-spacing:.06em; }
+        .exam-table-wrap { background:var(--white); overflow-x:auto; }
+        .exam-table { width:100%; border-collapse:collapse; }
+        .exam-table thead tr { background:var(--cream); }
+        .exam-table th { padding:13px 16px; font-size:.7rem; font-weight:700; letter-spacing:.09em; text-transform:uppercase; color:var(--muted); border-bottom:1.5px solid rgba(0,0,0,.08); font-family:'Outfit',sans-serif; white-space:nowrap; }
+        .exam-table td { padding:13px 16px; font-size:.85rem; border-bottom:1px solid rgba(0,0,0,.05); color:var(--charcoal); }
+        .exam-table tbody tr:last-child td { border-bottom:none; }
+        .exam-table tbody tr:hover { background:rgba(26,61,43,.03); }
+        .exam-date { font-weight:600; color:var(--green-deep); white-space:nowrap; }
+        .exam-time { font-family:'Outfit',monospace; font-size:.8rem; color:var(--muted); white-space:nowrap; }
+        .exam-code { font-weight:700; color:var(--blue); font-family:'Outfit',monospace; font-size:.82rem; white-space:nowrap; }
+        .lvl-pill { display:inline-block; font-size:.65rem; font-weight:700; padding:3px 10px; border-radius:50px; }
+        .lvl-200 { background:rgba(13,110,253,.1); color:var(--blue); }
+        .lvl-300 { background:rgba(45,106,79,.1); color:var(--green-mid); }
+        .lvl-400 { background:rgba(212,160,23,.12); color:var(--gold); }
+        .lvl-500 { background:rgba(26,61,43,.1); color:var(--green-deep); }
+        .exam-guidelines { margin:0; padding:22px 28px; background:rgba(13,110,253,.04); border-top:1px solid rgba(0,0,0,.06); }
+        .exam-guidelines h6 { font-size:.82rem; font-weight:700; color:var(--blue); margin-bottom:10px; }
+        .exam-guidelines ul { list-style:none; display:flex; flex-wrap:wrap; gap:6px 28px; }
+        .exam-guidelines li { font-size:.8rem; color:var(--muted); padding-left:14px; position:relative; }
+        .exam-guidelines li::before { content:'→'; position:absolute; left:0; color:var(--green-accent); font-size:.72rem; }
+
+        /* ── CLASS TIMETABLE ── */
+        #class-timetable { padding:80px 0; background:var(--cream); }
+        .level-pills { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:28px; }
+        .lp-btn { padding:8px 20px; border-radius:9px; font-size:.8rem; font-weight:700; border:1.5px solid; cursor:pointer; transition:all .25s var(--ease); letter-spacing:.03em; background:transparent; }
+        .lp-btn[data-lv="200"]       { border-color:var(--blue); color:var(--blue); }
+        .lp-btn[data-lv="200"].active{ background:var(--blue); color:#fff; box-shadow:0 4px 14px rgba(13,110,253,.3); }
+        .lp-btn[data-lv="300"]       { border-color:var(--green-mid); color:var(--green-mid); }
+        .lp-btn[data-lv="300"].active{ background:var(--green-mid); color:#fff; box-shadow:0 4px 14px rgba(45,106,79,.35); }
+        .lp-btn[data-lv="400"]       { border-color:var(--gold); color:var(--gold); }
+        .lp-btn[data-lv="400"].active{ background:var(--gold); color:var(--green-deep); box-shadow:0 4px 14px rgba(212,160,23,.35); }
+        .lp-btn[data-lv="500"]       { border-color:var(--green-deep); color:var(--green-deep); }
+        .lp-btn[data-lv="500"].active{ background:var(--green-deep); color:#fff; box-shadow:0 4px 14px rgba(26,61,43,.35); }
+        .tt-pane { display:none; }
+        .tt-pane.active { display:block; }
+        .tt-wrap { border-radius:var(--rl); overflow:hidden; box-shadow:var(--sh-md); border:1px solid rgba(0,0,0,.06); }
+        .tt-hd { padding:18px 28px; }
+        .tt-hd.c200 { background:linear-gradient(135deg,var(--blue),var(--blue-dark)); }
+        .tt-hd.c300 { background:linear-gradient(135deg,var(--green-mid),var(--green-accent)); }
+        .tt-hd.c400 { background:linear-gradient(135deg,var(--gold),var(--gold-light)); }
+        .tt-hd.c400 h5 { color:var(--green-deep); }
+        .tt-hd.c500 { background:linear-gradient(135deg,var(--green-deep),#0a1f14); }
+        .tt-hd h5 { font-size:1.05rem; color:#fff; margin:0; }
+        .tt-table-wrap { background:var(--white); overflow-x:auto; }
+        .tt-table { width:100%; border-collapse:collapse; }
+        .tt-table thead tr { background:var(--cream); }
+        .tt-table th { padding:11px 14px; font-size:.68rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); border-bottom:1.5px solid rgba(0,0,0,.08); white-space:nowrap; }
+        .tt-table td { padding:11px 14px; border-bottom:1px solid rgba(0,0,0,.05); font-size:.8rem; color:var(--charcoal); vertical-align:top; }
+        .tt-table tbody tr:last-child td { border-bottom:none; }
+        .tt-table tbody tr:hover { background:rgba(26,61,43,.03); }
+        .tt-table .time-col { font-weight:700; font-size:.76rem; color:var(--muted); background:var(--cream); white-space:nowrap; }
+        .tt-table .slot .code  { font-weight:700; color:var(--blue); font-size:.73rem; display:block; margin-bottom:2px; }
+        .tt-table .slot .name  { color:var(--charcoal); font-size:.77rem; display:block; margin-bottom:2px; line-height:1.3; }
+        .tt-table .slot .venue { color:var(--muted); font-size:.7rem; font-style:italic; display:block; }
+        .tt-table .empty       { color:rgba(0,0,0,.15); text-align:center; font-size:.8rem; }
+
+        /* ── STUDENT AFFAIRS ── */
+        #student-affairs { padding:80px 0; background:linear-gradient(160deg,var(--cream-alt) 0%,var(--cream-dark) 100%); }
+        .affairs-card { border-radius:var(--rl); overflow:hidden; box-shadow:var(--sh-sm); border:1px solid rgba(0,0,0,.06); height:100%; background:var(--white); transition:transform .35s var(--ease),box-shadow .35s var(--ease); }
+        .affairs-card:hover { transform:translateY(-5px); box-shadow:var(--sh-md); }
+        .affairs-hd { padding:16px 22px; display:flex; align-items:center; gap:10px; }
+        .affairs-hd h5 { font-size:1.05rem; margin:0; }
+        .affairs-hd.primary { background:linear-gradient(135deg,var(--blue),var(--blue-dark)); color:#fff; }
+        .affairs-hd.success { background:linear-gradient(135deg,var(--green-mid),var(--green-accent)); color:#fff; }
+        .affairs-body { padding:24px; }
+        .support-item { display:flex; gap:13px; align-items:flex-start; padding-bottom:16px; margin-bottom:16px; border-bottom:1px dashed rgba(0,0,0,.07); }
+        .support-item:last-child { border-bottom:none; margin-bottom:0; padding-bottom:0; }
+        .si-icon { width:36px; height:36px; flex-shrink:0; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:.9rem; }
+        .si-icon.blue  { background:rgba(13,110,253,.1); color:var(--blue); }
+        .si-icon.green { background:rgba(64,145,108,.1); color:var(--green-accent); }
+        .si-icon.teal  { background:rgba(8,145,178,.1);  color:#0891b2; }
+        .si-icon.gold  { background:rgba(212,160,23,.1); color:var(--gold); }
+        .si-title  { font-size:.88rem; font-weight:700; color:var(--green-deep); margin-bottom:3px; }
+        .si-desc   { font-size:.8rem; color:var(--muted); line-height:1.55; margin-bottom:3px; }
+        .si-contact{ font-size:.75rem; color:var(--blue); font-weight:600; }
+
+        /* ── RESOURCES ── */
+        #resources { padding:80px 0; background:var(--cream); position:relative; }
+        .res-card { border-radius:var(--rl); overflow:hidden; box-shadow:var(--sh-sm); border:1px solid rgba(0,0,0,.06); background:var(--white); height:100%; transition:transform .35s var(--ease),box-shadow .35s var(--ease); }
+        .res-card:hover { transform:translateY(-5px); box-shadow:var(--sh-md); }
+        .res-card__hd { padding:18px 22px; display:flex; align-items:center; gap:11px; }
+        .res-card__hd .rc-icon { width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0; }
+        .res-card__hd h5 { font-size:1.05rem; margin:0; }
+        .res-card__hd.danger  { background:linear-gradient(135deg,#b91c1c,#dc2626); color:#fff; }
+        .res-card__hd.danger  .rc-icon { background:rgba(255,255,255,.15); color:#fff; }
+        .res-card__hd.primary { background:linear-gradient(135deg,var(--blue),var(--blue-dark)); color:#fff; }
+        .res-card__hd.primary .rc-icon{ background:rgba(255,255,255,.15); color:#fff; }
+        .res-card__hd.success { background:linear-gradient(135deg,var(--green-mid),var(--green-accent)); color:#fff; }
+        .res-card__hd.success .rc-icon{ background:rgba(255,255,255,.15); color:#fff; }
+        .res-card__body { padding:22px; }
+        .res-links { display:flex; flex-direction:column; gap:8px; }
+        .res-link { display:flex; align-items:center; justify-content:space-between; padding:9px 13px; border-radius:9px; border:1.5px solid rgba(0,0,0,.08); color:var(--charcoal); font-size:.82rem; font-weight:500; text-decoration:none; transition:all .25s var(--ease); }
+        .res-link:hover { background:var(--cream-alt); border-color:var(--green-accent); color:var(--green-mid); }
+        .res-link .arr { font-size:.75rem; color:var(--muted); }
+
+        /* ── FOOTER — matches index.html ── */
+        footer { background:linear-gradient(160deg,#0a1a10 0%,#1a3d2b 100%); color:rgba(255,255,255,.72); padding:64px 0 0; }
+        .foot-brand { font-family:'Playfair Display',serif; font-size:1.25rem; color:var(--green-light); font-weight:700; margin-bottom:10px; }
+        .foot-desc  { font-size:.84rem; line-height:1.75; margin-bottom:18px; }
+        .foot-social a { display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:8px; border:1px solid rgba(255,255,255,.15); color:rgba(255,255,255,.65); margin-right:8px; text-decoration:none; transition:all .3s; }
+        .foot-social a:hover { background:rgba(255,255,255,.1); color:#fff; border-color:rgba(255,255,255,.35); }
+        .foot-hd { font-family:'Playfair Display',serif; font-size:1.05rem; color:var(--gold-light); margin-bottom:18px; }
+        .foot-links { list-style:none; }
+        .foot-links li { margin-bottom:9px; }
+        .foot-links a { color:rgba(255,255,255,.6); font-size:.84rem; display:flex; align-items:center; gap:6px; text-decoration:none; transition:all .3s; }
+        .foot-links a:hover { color:var(--green-light); padding-left:5px; }
+        .foot-links a::before { content:'→'; font-size:.72rem; opacity:.55; }
+        .foot-ci { display:flex; align-items:flex-start; gap:10px; margin-bottom:12px; }
+        .foot-ci i { color:var(--green-light); width:15px; flex-shrink:0; margin-top:3px; }
+        .foot-ci span { font-size:.83rem; }
+        .foot-bottom { border-top:1px solid rgba(255,255,255,.08); margin-top:48px; padding:20px 0; text-align:center; }
+        .foot-bottom p { font-size:.76rem; color:rgba(255,255,255,.38); margin:0; }
+
+        /* ── Responsive ── */
+        @media(max-width:991px){
+            .president-card { flex-direction:column; text-align:center; }
+            .org-grid { grid-template-columns:1fr; }
+            .leaders-grid { grid-template-columns:repeat(2,1fr); }
+        }
+        @media(max-width:576px){
+            .leaders-grid { grid-template-columns:repeat(2,1fr); }
+        }
+    </style>
+
 </head>
 <body data-bs-spy="scroll" data-bs-target="#navbar" data-bs-offset="100">
     
@@ -62,817 +468,552 @@
         {% endif %}
     {% endwith %}
 
-    <!-- Hero Section -->
-    <section style="background-image: url('/static/images/studentpic.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat;" class="hero-section">
-        <div class="hero-overlay">
-            <div class="container">
-                <div class="row align-items-center min-vh-100">
-                    <div class="col-lg-8 mx-auto text-center text-white">
-                        <h1 class="display-3 fw-bold mb-4">Student Information Portal</h1>
-                        <p class="lead fs-4 mb-5">Your gateway to academic resources, examination updates, and student affairs</p>
-                        <div class="hero-badges">
-                            <span class="badge bg-success fs-6 me-3"><i class="fas fa-graduation-cap me-2"></i>Academic Excellence</span>
-                            <span class="badge bg-info fs-6 me-3"><i class="fas fa-calendar-alt me-2"></i>Updated Schedules</span>
-                            <span class="badge bg-warning fs-6"><i class="fas fa-users me-2"></i>Student Support</span>
+<!-- ═══════════════════════════════════════════════
+     QUICK ACCESS
+═══════════════════════════════════════════════ -->
+<section id="quick-access">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title fu">Quick Access</h2>
+            <div class="title-underline"></div>
+            <p class="section-lead fu">Essential student services, all in one place.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6 fu">
+                <div class="qa-card">
+                    <div class="qa-card__top">
+                        <div class="qa-icon blue"><i class="fas fa-calendar-check"></i></div>
+                        <div class="qa-card__title">Examination Timetable</div>
+                        <p class="qa-card__desc">View current semester exam schedules and important dates for all levels.</p>
+                    </div>
+                    <div class="qa-card__foot"><a href="#exam-schedule" class="qa-btn blue"><i class="fas fa-arrow-right"></i> View Schedule</a></div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 fu">
+                <div class="qa-card">
+                    <div class="qa-card__top">
+                        <div class="qa-icon green"><i class="fas fa-clipboard-list"></i></div>
+                        <div class="qa-card__title">Academic Notices</div>
+                        <p class="qa-card__desc">Stay updated with important announcements, deadlines, and department news.</p>
+                    </div>
+                    <div class="qa-card__foot"><a href="#notices" class="qa-btn green"><i class="fas fa-arrow-right"></i> View Notices</a></div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 fu">
+                <div class="qa-card">
+                    <div class="qa-card__top">
+                        <div class="qa-icon teal"><i class="fas fa-clock"></i></div>
+                        <div class="qa-card__title">Class Timetable</div>
+                        <p class="qa-card__desc">Access your weekly class schedules by level — 200L through 500L.</p>
+                    </div>
+                    <div class="qa-card__foot"><a href="#class-timetable" class="qa-btn teal"><i class="fas fa-arrow-right"></i> View Timetable</a></div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 fu">
+                <div class="qa-card">
+                    <div class="qa-card__top">
+                        <div class="qa-icon gold"><i class="fas fa-user-friends"></i></div>
+                        <div class="qa-card__title">Student Affairs</div>
+                        <p class="qa-card__desc">Connect with student support services, counseling, and welfare.</p>
+                    </div>
+                    <div class="qa-card__foot"><a href="#student-affairs" class="qa-btn gold"><i class="fas fa-arrow-right"></i> Learn More</a></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="wave" style="background:var(--cream);"><svg viewBox="0 0 1440 55" preserveAspectRatio="none" style="width:100%;height:55px;"><path d="M0,55 L0,28 Q360,0 720,28 Q1080,55 1440,28 L1440,55 Z" fill="var(--cream-alt)"/></svg></div>
+
+<!-- ═══════════════════════════════════════════════
+     ACADEMIC NOTICES
+═══════════════════════════════════════════════ -->
+<section id="notices">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title fu">Academic Notices &amp; Updates</h2>
+            <div class="title-underline"></div>
+            <p class="section-lead fu">Stay informed about deadlines, events, and important announcements.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-8 fu">
+                <div class="notice-wrap">
+                    <div class="notice-wrap__hd"><i class="fas fa-exclamation-circle fs-5"></i><h5>Important Notices</h5></div>
+                    <div class="notice-wrap__body">
+                        <div class="notice-item danger">
+                            <div class="ni-head"><h6 class="ni-title danger">Second Semester Resumption — 2024/2025</h6><span class="ni-badge danger">New</span></div>
+                            <p class="ni-meta"><strong>Date:</strong> August 26, 2025</p>
+                            <p class="ni-body">All students are expected to resume for the second semester. Lectures commence immediately. Late registration attracts penalties as stipulated by university policy.</p>
+                        </div>
+                        <div class="notice-item warning">
+                            <div class="ni-head"><h6 class="ni-title warning">Final Year Project Defense Schedule</h6><span class="ni-badge warning">Urgent</span></div>
+                            <p class="ni-meta"><strong>Date:</strong> September 2–6, 2025</p>
+                            <p class="ni-body">500-level students must submit final project reports by August 30th. Defense schedule will be posted on the departmental notice board. No extensions will be granted.</p>
+                        </div>
+                        <div class="notice-item info">
+                            <div class="ni-head"><h6 class="ni-title info">Industrial Training (IT) Registration</h6><span class="ni-badge info">Reminder</span></div>
+                            <p class="ni-meta"><strong>Deadline:</strong> September 15, 2025</p>
+                            <p class="ni-body">400-level students must complete IT registration and submit placement letters. Contact the IT coordinator for assistance with placement verification.</p>
+                        </div>
+                        <div class="notice-item success">
+                            <div class="ni-head"><h6 class="ni-title success">Course Registration Portal Now Active</h6><span class="ni-badge success">Active</span></div>
+                            <p class="ni-meta"><strong>Status:</strong> Open until September 30, 2025</p>
+                            <p class="ni-body">Course registration portal is now active for all students. Complete registration early to avoid the last-minute rush and potential penalties.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 fu">
+                <div class="timeline-card">
+                    <h5><i class="fas fa-calendar-alt me-2"></i>Important Dates</h5>
+                    <div class="tl-item"><div class="tl-date"><span class="d">26</span><span class="m">Aug</span></div><div class="tl-content"><h6>Second Semester Begins</h6><p>Lectures commence for all levels</p></div></div>
+                    <div class="tl-item"><div class="tl-date"><span class="d">30</span><span class="m">Aug</span></div><div class="tl-content"><h6>Project Report Submission</h6><p>500L students deadline</p></div></div>
+                    <div class="tl-item"><div class="tl-date"><span class="d">2–6</span><span class="m">Sep</span></div><div class="tl-content"><h6>Project Defense Week</h6><p>Final year presentations</p></div></div>
+                    <div class="tl-item"><div class="tl-date"><span class="d">15</span><span class="m">Sep</span></div><div class="tl-content"><h6>IT Registration Deadline</h6><p>400L students</p></div></div>
+                    <div class="tl-item"><div class="tl-date"><span class="d">30</span><span class="m">Sep</span></div><div class="tl-content"><h6>Course Registration Ends</h6><p>All levels</p></div></div>
+                    <div class="tl-item"><div class="tl-date"><span class="d">2</span><span class="m">Dec</span></div><div class="tl-content"><h6>Examinations Begin</h6><p>2nd Semester exams commence</p></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="wave" style="background:linear-gradient(160deg,var(--cream-alt),var(--cream-dark));"><svg viewBox="0 0 1440 55" preserveAspectRatio="none" style="width:100%;height:55px;"><path d="M0,0 Q720,55 1440,0 L1440,55 L0,55 Z" fill="var(--cream)"/></svg></div>
+
+<!-- ═══════════════════════════════════════════════
+     STUDENT LEADERS & GOVERNANCE
+═══════════════════════════════════════════════ -->
+<section id="student-leaders">
+    <div class="dot-bg" style="opacity:.04;"></div>
+    <div class="container position-relative">
+        <div class="text-center mb-5">
+            <h2 class="section-title fu">Student Leadership &amp; Governance</h2>
+            <div class="title-underline"></div>
+            <p class="section-lead fu">Meet the elected representatives who advocate for your academic and social interests across all levels of the department.</p>
+        </div>
+
+        <div class="leaders-wrap fu">
+            <div class="leaders-hd">
+                <div class="hicon"><i class="fas fa-crown"></i></div>
+                <div>
+                    <h4>AEE Student Association — Executive &amp; Level Representatives</h4>
+                    <p>2024/2025 Academic Session &nbsp;·&nbsp; Agricultural &amp; Environmental Engineering, UI</p>
+                </div>
+            </div>
+            <div class="leaders-body">
+
+                <!-- ══ PRESIDENT (featured) ══ -->
+                <div class="president-card">
+                    <i class="fas fa-crown president-crown"></i>
+                    <div class="leader-avatar">
+                        <!--
+                          IMAGE INSTRUCTIONS:
+                          Put the president's photo in: /static/images/leaders/president.jpg
+                          The onerror fallback shows initials automatically if the image is missing.
+                        -->
+                        <img src="{{ url_for('static', filename='images/leaders/president.jpg') }}"
+                             alt="Association President"
+                             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                        <div class="av-fb lg">P</div>
+                        <div class="av-badge"><i class="fas fa-star" style="font-size:.45rem;"></i></div>
+                    </div>
+                    <div class="leader-info">
+                        <div class="leader-role"><i class="fas fa-crown me-1"></i>President — AEE Student Association</div>
+                        <div class="leader-name">[President's Full Name]</div>
+                        <div class="leader-level"><i class="fas fa-layer-group me-1" style="color:var(--gold);"></i>500 Level &nbsp;·&nbsp; Final Year &nbsp;·&nbsp; 2024/2025 Session</div>
+                        <div class="leader-quote">"Committed to academic excellence, student welfare, and building a stronger, more connected AEE community for every level."</div>
+                    </div>
+                </div>
+
+                <!-- ══ LEVEL REPS GRID ══ -->
+                <h5 class="mb-3" style="font-size:1.05rem;color:var(--green-deep);border-bottom:1px dashed rgba(0,0,0,.1);padding-bottom:10px;">
+                    <i class="fas fa-users me-2" style="color:var(--green-accent);"></i>Executive Officers &amp; Level Representatives
+                </h5>
+                <div class="leaders-grid mb-4">
+
+                    <!-- Vice President -->
+                    <div class="leader-card">
+                        <div class="card-av">
+                            <!-- Image path: /static/images/leaders/vice_president.jpg -->
+                            <img src="{{ url_for('static', filename='images/leaders/vice_president.jpg') }}"
+                                 alt="Vice President"
+                                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                            <div class="av-fb sm">V</div>
+                        </div>
+                        <div class="lc-role">Vice President</div>
+                        <div class="lc-name">[VP's Full Name]</div>
+                        <div class="lc-level">500 Level</div>
+                        <span class="lc-badge" style="background:rgba(13,110,253,.08);color:var(--blue);">Executive</span>
+                    </div>
+
+                    <!-- Secretary General -->
+                    <div class="leader-card">
+                        <div class="card-av">
+                            <!-- Image path: /static/images/leaders/secretary.jpg -->
+                            <img src="{{ url_for('static', filename='images/leaders/secretary.jpg') }}"
+                                 alt="Secretary General"
+                                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                            <div class="av-fb sm">S</div>
+                        </div>
+                        <div class="lc-role">Secretary General</div>
+                        <div class="lc-name">[Secretary's Full Name]</div>
+                        <div class="lc-level">400 Level</div>
+                        <span class="lc-badge" style="background:rgba(13,110,253,.08);color:var(--blue);">Executive</span>
+                    </div>
+
+                    <!-- Financial Secretary -->
+                    <div class="leader-card">
+                        <div class="card-av">
+                            <!-- Image path: /static/images/leaders/financial_sec.jpg -->
+                            <img src="{{ url_for('static', filename='images/leaders/financial_sec.jpg') }}"
+                                 alt="Financial Secretary"
+                                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                            <div class="av-fb sm">F</div>
+                        </div>
+                        <div class="lc-role">Financial Secretary</div>
+                        <div class="lc-name">[FinSec's Full Name]</div>
+                        <div class="lc-level">400 Level</div>
+                        <span class="lc-badge" style="background:rgba(13,110,253,.08);color:var(--blue);">Executive</span>
+                    </div>
+
+                    <!-- PRO -->
+                    <div class="leader-card">
+                        <div class="card-av">
+                            <!-- Image path: /static/images/leaders/pro.jpg -->
+                            <img src="{{ url_for('static', filename='images/leaders/pro.jpg') }}"
+                                 alt="Public Relations Officer"
+                                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                            <div class="av-fb sm">P</div>
+                        </div>
+                        <div class="lc-role">P.R.O</div>
+                        <div class="lc-name">[PRO's Full Name]</div>
+                        <div class="lc-level">300 Level</div>
+                        <span class="lc-badge" style="background:rgba(13,110,253,.08);color:var(--blue);">Executive</span>
+                    </div>
+
+                    <!-- 200L Representative -->
+                    <div class="leader-card">
+                        <div class="card-av">
+                            <!-- Image path: /static/images/leaders/rep_200.jpg -->
+                            <img src="{{ url_for('static', filename='images/leaders/rep_200.jpg') }}"
+                                 alt="200 Level Representative"
+                                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                            <div class="av-fb sm">2</div>
+                        </div>
+                        <div class="lc-role">200L Representative</div>
+                        <div class="lc-name">[200L Rep Name]</div>
+                        <div class="lc-level">200 Level · Second Year</div>
+                        <span class="lc-badge" style="background:rgba(13,110,253,.08);color:var(--blue);">Level Rep</span>
+                    </div>
+
+                    <!-- 300L Representative -->
+                    <div class="leader-card">
+                        <div class="card-av">
+                            <!-- Image path: /static/images/leaders/rep_300.jpg -->
+                            <img src="{{ url_for('static', filename='images/leaders/rep_300.jpg') }}"
+                                 alt="300 Level Representative"
+                                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                            <div class="av-fb sm">3</div>
+                        </div>
+                        <div class="lc-role">300L Representative</div>
+                        <div class="lc-name">[300L Rep Name]</div>
+                        <div class="lc-level">300 Level · Third Year</div>
+                        <span class="lc-badge" style="background:rgba(45,106,79,.08);color:var(--green-mid);">Level Rep</span>
+                    </div>
+
+                    <!-- 400L Representative -->
+                    <div class="leader-card">
+                        <div class="card-av">
+                            <!-- Image path: /static/images/leaders/rep_400.jpg -->
+                            <img src="{{ url_for('static', filename='images/leaders/rep_400.jpg') }}"
+                                 alt="400 Level Representative"
+                                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                            <div class="av-fb sm">4</div>
+                        </div>
+                        <div class="lc-role">400L Representative</div>
+                        <div class="lc-name">[400L Rep Name]</div>
+                        <div class="lc-level">400 Level · Fourth Year</div>
+                        <span class="lc-badge" style="background:rgba(212,160,23,.1);color:var(--gold);">Level Rep</span>
+                    </div>
+
+                    <!-- 500L Representative -->
+                    <div class="leader-card">
+                        <div class="card-av">
+                            <!-- Image path: /static/images/leaders/rep_500.jpg -->
+                            <img src="{{ url_for('static', filename='images/leaders/rep_500.jpg') }}"
+                                 alt="500 Level Representative"
+                                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                            <div class="av-fb sm">5</div>
+                        </div>
+                        <div class="lc-role">500L Representative</div>
+                        <div class="lc-name">[500L Rep Name]</div>
+                        <div class="lc-level">500 Level · Final Year</div>
+                        <span class="lc-badge" style="background:rgba(26,61,43,.08);color:var(--green-deep);">Level Rep</span>
+                    </div>
+
+                </div>
+
+                <!-- ══ ORGANIZATIONS ══ -->
+                <h5 class="mb-3" style="font-size:1.05rem;color:var(--green-deep);border-bottom:1px dashed rgba(0,0,0,.1);padding-bottom:10px;">
+                    <i class="fas fa-sitemap me-2" style="color:var(--green-accent);"></i>Student Organizations &amp; Clubs
+                </h5>
+                <div class="org-grid">
+                    <div class="org-card">
+                        <div class="org-icon" style="background:rgba(13,110,253,.1);color:var(--blue);"><i class="fas fa-university"></i></div>
+                        <h6>AEE Students Association</h6>
+                        <p>Official student body representing all AEE students. Organizes academic workshops, social events, and departmental activities.</p>
+                        <span class="org-meta"><i class="fas fa-user-tie me-1"></i>Contact via departmental office</span>
+                    </div>
+                    <div class="org-card">
+                        <div class="org-icon" style="background:rgba(64,145,108,.1);color:var(--green-accent);"><i class="fas fa-certificate"></i></div>
+                        <h6>NIAE Student Chapter</h6>
+                        <p>Student chapter of the Nigerian Institute of Agricultural Engineers promoting professional development and networking.</p>
+                        <span class="org-meta"><i class="fas fa-chalkboard-teacher me-1"></i>Coordinator: Prof. A. I. Bamgboye</span>
+                    </div>
+                    <div class="org-card">
+                        <div class="org-icon" style="background:rgba(212,160,23,.1);color:var(--gold);"><i class="fas fa-cogs"></i></div>
+                        <h6>Engineering Students Society</h6>
+                        <p>Inter-departmental engineering society fostering collaboration, innovation, and cross-disciplinary projects across the faculty.</p>
+                        <span class="org-meta"><i class="fas fa-building me-1"></i>Faculty of Technology</span>
+                    </div>
+                    <div class="org-card">
+                        <div class="org-icon" style="background:rgba(8,145,178,.1);color:#0891b2;"><i class="fas fa-flask"></i></div>
+                        <h6>Research &amp; Innovation Club</h6>
+                        <p>Student-led research initiatives and innovation projects in agricultural engineering, open to all levels.</p>
+                        <span class="org-meta"><i class="fas fa-clock me-1"></i>Fridays 4:00 PM — AEE Conference Hall</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="wave" style="background:var(--cream);"><svg viewBox="0 0 1440 55" preserveAspectRatio="none" style="width:100%;height:55px;"><path d="M0,55 L0,28 Q360,0 720,28 Q1080,55 1440,28 L1440,55 Z" fill="var(--cream-alt)"/></svg></div>
+
+<!-- ═══════════════════════════════════════════════
+     EXAMINATION SCHEDULE
+═══════════════════════════════════════════════ -->
+<section id="exam-schedule">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title fu">Examination Timetable</h2>
+            <div class="title-underline"></div>
+            <p class="section-lead fu">2024/2025 Academic Session — Second Semester</p>
+        </div>
+        <div class="exam-wrap fu">
+            <div class="exam-hd">
+                <h5><i class="fas fa-calendar-check me-2"></i>Second Semester Examination Schedule</h5>
+                <span class="exam-session">Dec 2–11, 2025</span>
+            </div>
+            <div class="exam-table-wrap">
+                <table class="exam-table">
+                    <thead><tr><th>Date</th><th>Time</th><th>Course Code</th><th>Course Title</th><th>Level</th><th>Venue</th></tr></thead>
+                    <tbody>
+                        <tr><td class="exam-date">Dec 2, 2025</td><td class="exam-time">9:00 AM</td><td class="exam-code">TAE 212</td><td>Principles of Farm Mechanization</td><td><span class="lvl-pill lvl-200">200L</span></td><td>LT 1, Faculty of Technology</td></tr>
+                        <tr><td class="exam-date">Dec 3, 2025</td><td class="exam-time">9:00 AM</td><td class="exam-code">TAE 312</td><td>Agricultural Processing Engineering I</td><td><span class="lvl-pill lvl-300">300L</span></td><td>LT 2, Faculty of Technology</td></tr>
+                        <tr><td class="exam-date">Dec 4, 2025</td><td class="exam-time">2:00 PM</td><td class="exam-code">TAE 412</td><td>Engineering Properties of Plants and Animal Materials</td><td><span class="lvl-pill lvl-400">400L</span></td><td>AEE Conference Hall</td></tr>
+                        <tr><td class="exam-date">Dec 5, 2025</td><td class="exam-time">9:00 AM</td><td class="exam-code">TAE 514</td><td>Irrigation Engineering</td><td><span class="lvl-pill lvl-500">500L</span></td><td>AEE Laboratory</td></tr>
+                        <tr><td class="exam-date">Dec 6, 2025</td><td class="exam-time">9:00 AM</td><td class="exam-code">TAE 315</td><td>Soil Mechanics for Agricultural Engineers</td><td><span class="lvl-pill lvl-300">300L</span></td><td>LT 1, Faculty of Technology</td></tr>
+                        <tr><td class="exam-date">Dec 7, 2025</td><td class="exam-time">2:00 PM</td><td class="exam-code">TAE 415</td><td>Hydraulics for Agricultural Engineers</td><td><span class="lvl-pill lvl-400">400L</span></td><td>LT 2, Faculty of Technology</td></tr>
+                        <tr><td class="exam-date">Dec 8, 2025</td><td class="exam-time">9:00 AM</td><td class="exam-code">TAE 522</td><td>Agricultural Materials Handling</td><td><span class="lvl-pill lvl-500">500L</span></td><td>AEE Conference Hall</td></tr>
+                        <tr><td class="exam-date">Dec 9, 2025</td><td class="exam-time">9:00 AM</td><td class="exam-code">TAE 414</td><td>Design of Agricultural Structures</td><td><span class="lvl-pill lvl-400">400L</span></td><td>AEE Laboratory</td></tr>
+                        <tr><td class="exam-date">Dec 10, 2025</td><td class="exam-time">2:00 PM</td><td class="exam-code">TAE 313</td><td>Farm Power and Maintenance I</td><td><span class="lvl-pill lvl-300">300L</span></td><td>LT 1, Faculty of Technology</td></tr>
+                        <tr><td class="exam-date">Dec 11, 2025</td><td class="exam-time">9:00 AM</td><td class="exam-code">TAE 515</td><td>Drainage Engineering</td><td><span class="lvl-pill lvl-500">500L</span></td><td>AEE Conference Hall</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="exam-guidelines">
+                <h6><i class="fas fa-info-circle me-2"></i>Examination Guidelines</h6>
+                <ul>
+                    <li>Arrive 30 minutes before exam time</li>
+                    <li>Valid student ID required for admission</li>
+                    <li>Mobile phones and unauthorized materials are prohibited</li>
+                    <li>Late arrival beyond 30 minutes will not be permitted</li>
+                    <li>Results released within 4 weeks of examination</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     STUDENT AFFAIRS
+═══════════════════════════════════════════════ -->
+<section id="student-affairs">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title fu">Student Affairs &amp; Support</h2>
+            <div class="title-underline"></div>
+            <p class="section-lead fu">Comprehensive support for your academic journey and personal wellbeing.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-6 fu">
+                <div class="affairs-card">
+                    <div class="affairs-hd primary"><i class="fas fa-graduation-cap"></i><h5>Academic Support Services</h5></div>
+                    <div class="affairs-body">
+                        <div class="support-item"><div class="si-icon blue"><i class="fas fa-chalkboard-teacher"></i></div><div><div class="si-title">Academic Counseling</div><div class="si-desc">Guidance on course selection, academic planning, and career development.</div><div class="si-contact">Dr. H. A. Alabi &nbsp;·&nbsp; ha.alabi@ui.edu.ng</div></div></div>
+                        <div class="support-item"><div class="si-icon green"><i class="fas fa-users"></i></div><div><div class="si-title">Peer Tutoring Program</div><div class="si-desc">Connect with senior students for additional academic support and mentoring.</div><div class="si-contact">Coordinator: Student Affairs Office</div></div></div>
+                        <div class="support-item"><div class="si-icon teal"><i class="fas fa-laptop"></i></div><div><div class="si-title">Computer Lab Access</div><div class="si-desc">24/7 access to the computer laboratory for research and assignments.</div><div class="si-contact">Location: AEE Building, Ground Floor</div></div></div>
+                        <div class="support-item"><div class="si-icon gold"><i class="fas fa-book"></i></div><div><div class="si-title">Library Resources</div><div class="si-desc">Specialized agricultural engineering books and journals.</div><div class="si-contact">Mon–Fri 8AM–6PM &nbsp;·&nbsp; Sat 9AM–2PM</div></div></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 fu">
+                <div class="affairs-card">
+                    <div class="affairs-hd success"><i class="fas fa-heart"></i><h5>Personal Support Services</h5></div>
+                    <div class="affairs-body">
+                        <div class="support-item"><div class="si-icon blue"><i class="fas fa-user-md"></i></div><div><div class="si-title">Counseling Services</div><div class="si-desc">Professional counseling for personal, academic, and career-related challenges.</div><div class="si-contact">University Counseling Center</div></div></div>
+                        <div class="support-item"><div class="si-icon green"><i class="fas fa-medkit"></i></div><div><div class="si-title">Health Services</div><div class="si-desc">On-campus health center providing medical care and health education.</div><div class="si-contact">Location: University Health Center</div></div></div>
+                        <div class="support-item"><div class="si-icon teal"><i class="fas fa-money-bill-wave"></i></div><div><div class="si-title">Financial Aid</div><div class="si-desc">Scholarships, grants, and financial assistance programs available.</div><div class="si-contact">Contact: Student Financial Services</div></div></div>
+                        <div class="support-item"><div class="si-icon gold"><i class="fas fa-home"></i></div><div><div class="si-title">Accommodation Services</div><div class="si-desc">Assistance with on-campus and off-campus housing arrangements.</div><div class="si-contact">Contact: Accommodation Office</div></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="wave" style="background:linear-gradient(160deg,var(--cream-alt),var(--cream-dark));"><svg viewBox="0 0 1440 55" preserveAspectRatio="none" style="width:100%;height:55px;"><path d="M0,0 Q720,55 1440,0 L1440,55 L0,55 Z" fill="var(--cream)"/></svg></div>
+
+<!-- ═══════════════════════════════════════════════
+     RESOURCES & DOWNLOADS
+═══════════════════════════════════════════════ -->
+<section id="resources">
+    <div class="dot-bg" style="opacity:.045;"></div>
+    <div class="container position-relative">
+        <div class="text-center mb-5">
+            <h2 class="section-title fu">Academic Resources &amp; Downloads</h2>
+            <div class="title-underline"></div>
+            <p class="section-lead fu">Essential documents and resources for your academic journey.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-4 fu">
+                <div class="res-card">
+                    <div class="res-card__hd danger"><div class="rc-icon"><i class="fas fa-file-pdf"></i></div><h5>Course Materials</h5></div>
+                    <div class="res-card__body">
+                        <p style="font-size:.83rem;color:var(--muted);margin-bottom:16px;">Download comprehensive course materials and lecture notes for all levels.</p>
+                        <div class="res-links">
+                            <a href="https://drive.google.com/drive/folders/1f9kkHIMO2qW3ZwFmbeEZZozLJy_w0_Du" class="res-link" target="_blank">100 Level Materials <span class="arr">↗</span></a>
+                            <a href="https://drive.google.com/drive/folders/1f9kkHIMO2qW3ZwFmbeEZZozLJy_w0_Du" class="res-link" target="_blank">200 Level Materials <span class="arr">↗</span></a>
+                            <a href="https://drive.google.com/drive/folders/1f9kkHIMO2qW3ZwFmbeEZZozLJy_w0_Du" class="res-link" target="_blank">300 Level Materials <span class="arr">↗</span></a>
+                            <a href="#" class="res-link">400 Level Materials <span class="arr">↗</span></a>
+                            <a href="#" class="res-link">500 Level Materials <span class="arr">↗</span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 fu">
+                <div class="res-card">
+                    <div class="res-card__hd primary"><div class="rc-icon"><i class="fas fa-file-alt"></i></div><h5>Forms &amp; Documents</h5></div>
+                    <div class="res-card__body">
+                        <p style="font-size:.83rem;color:var(--muted);margin-bottom:16px;">Access important forms and official documents required for your studies.</p>
+                        <div class="res-links">
+                            <a href="#" class="res-link">Course Registration Form <span class="arr">↗</span></a>
+                            <a href="#" class="res-link">IT Registration Form <span class="arr">↗</span></a>
+                            <a href="#" class="res-link">Project Proposal Form <span class="arr">↗</span></a>
+                            <a href="#" class="res-link">Transcript Request <span class="arr">↗</span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 fu">
+                <div class="res-card">
+                    <div class="res-card__hd success"><div class="rc-icon"><i class="fas fa-calendar-alt"></i></div><h5>Academic Calendar</h5></div>
+                    <div class="res-card__body">
+                        <p style="font-size:.83rem;color:var(--muted);margin-bottom:16px;">Download the complete academic calendar with all important dates and periods.</p>
+                        <div class="res-links">
+                            <a href="#" class="res-link">2024/2025 Full Calendar <span class="arr">↗</span></a>
+                            <a href="#" class="res-link">Exam Schedule PDF <span class="arr">↗</span></a>
+                            <a href="#" class="res-link">Holiday Calendar <span class="arr">↗</span></a>
+                            <a href="#" class="res-link">IT Period Schedule <span class="arr">↗</span></a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Quick Links Section -->
-    <section class="py-5 bg-light">
-        <div class="container">
-            <div class="text-center mb-5">
-                <h2 class="section-title">Quick Access</h2>
-                <div class="title-underline"></div>
-                <p class="lead">Essential student services and information</p>
+<!-- ═══════════════════════════════════════════════
+     FOOTER — matches index.html
+═══════════════════════════════════════════════ -->
+<footer>
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="foot-brand">Agricultural &amp; Environmental Engineering</div>
+                <p class="foot-desc">Pioneering sustainable solutions for agriculture and environment through innovative engineering at the University of Ibadan since 1972.</p>
+                <div class="foot-social">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
             </div>
-            <div class="row">
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="card h-100 shadow-sm text-center">
-                        <div class="card-body">
-                            <i class="fas fa-calendar-check fa-3x text-primary mb-3"></i>
-                            <h5 class="card-title">Examination Timetable</h5>
-                            <p class="card-text">View current semester exam schedules and important dates</p>
-                            <a href="#exam-schedule" class="btn btn-primary">View Schedule</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="card h-100 shadow-sm text-center">
-                        <div class="card-body">
-                            <i class="fas fa-clipboard-list fa-3x text-success mb-3"></i>
-                            <h5 class="card-title">Academic Notices</h5>
-                            <p class="card-text">Stay updated with important announcements and notices</p>
-                            <a href="#notices" class="btn btn-success">View Notices</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="card h-100 shadow-sm text-center">
-                        <div class="card-body">
-                            <i class="fas fa-clock fa-3x text-info mb-3"></i>
-                            <h5 class="card-title">Class Timetable</h5>
-                            <p class="card-text">Access your weekly class schedules and venues</p>
-                            <a href="#class-timetable" class="btn btn-info">View Timetable</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="card h-100 shadow-sm text-center">
-                        <div class="card-body">
-                            <i class="fas fa-user-friends fa-3x text-warning mb-3"></i>
-                            <h5 class="card-title">Student Affairs</h5>
-                            <p class="card-text">Connect with student support services and counseling</p>
-                            <a href="#student-affairs" class="btn btn-warning">Learn More</a>
-                        </div>
-                    </div>
-                </div>
+            <div class="col-lg-2 col-md-6">
+                <div class="foot-hd">Quick Links</div>
+                <ul class="foot-links">
+                    <li><a href="{{ url_for('index') }}">Home</a></li>
+                    <li><a href="{{ url_for('staff') }}">Faculty</a></li>
+                    <li><a href="{{ url_for('payment') }}">Payment</a></li>
+                    <li><a href="{{ url_for('academic_program') }}">Academic Programme</a></li>
+                    <li><a href="{{ url_for('index') }}#contact">Contact</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="foot-hd">Student Services</div>
+                <ul class="foot-links">
+                    <li><a href="#student-leaders">Student Governance</a></li>
+                    <li><a href="#notices">Academic Notices</a></li>
+                    <li><a href="#exam-schedule">Examination Schedule</a></li>
+                    <li><a href="#class-timetable">Class Timetable</a></li>
+                    <li><a href="#student-affairs">Student Affairs</a></li>
+                    <li><a href="#resources">Downloads</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="foot-hd">Contact Info</div>
+                <div class="foot-ci"><i class="fas fa-map-marker-alt"></i><span>Faculty of Technology, University of Ibadan, Ibadan, Oyo State, Nigeria</span></div>
+                <div class="foot-ci"><i class="fas fa-phone-alt"></i><span>+234-903-576-2341</span></div>
+                <div class="foot-ci"><i class="fas fa-envelope"></i><span>info.agric@ui.edu.ng</span></div>
             </div>
         </div>
-    </section>
-
-    <!-- Academic Notices Section -->
-    <section id="notices" class="py-5">
-        <div class="container">
-            <div class="text-center mb-5">
-                <h2 class="section-title">Academic Notices & Updates</h2>
-                <div class="title-underline"></div>
-            </div>
-            <div class="row">
-                <div class="col-lg-8 mb-4">
-                    <div class="card shadow-sm">
-                        <div class="card-header bg-danger text-white">
-                            <h5 class="mb-0"><i class="fas fa-exclamation-circle me-2"></i>Important Notices</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="notice-item mb-4 p-3 border-start border-danger border-4 bg-light">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <h6 class="text-danger mb-0">Second Semester Resumption - 2024/2025</h6>
-                                    <span class="badge bg-danger">New</span>
-                                </div>
-                                <p class="mb-2"><strong>Date:</strong> August 26, 2025</p>
-                                <p class="mb-0">All students are expected to resume for the second semester. Lectures commence immediately. Late registration attracts penalties.</p>
-                            </div>
-                            
-                            <div class="notice-item mb-4 p-3 border-start border-warning border-4 bg-light">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <h6 class="text-warning mb-0">Final Year Project Defense Schedule</h6>
-                                    <span class="badge bg-warning">Urgent</span>
-                                </div>
-                                <p class="mb-2"><strong>Date:</strong> September 2-6, 2025</p>
-                                <p class="mb-0">500-level students must submit final project reports by August 30th. Defense schedule will be posted on the departmental notice board.</p>
-                            </div>
-                            
-                            <div class="notice-item mb-4 p-3 border-start border-info border-4 bg-light">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <h6 class="text-info mb-0">Industrial Training (IT) Registration</h6>
-                                    <span class="badge bg-info">Reminder</span>
-                                </div>
-                                <p class="mb-2"><strong>Deadline:</strong> September 15, 2025</p>
-                                <p class="mb-0">400-level students must complete IT registration and submit placement letters. Contact the IT coordinator for assistance.</p>
-                            </div>
-
-                            <div class="notice-item mb-4 p-3 border-start border-success border-4 bg-light">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <h6 class="text-success mb-0">Course Registration Portal</h6>
-                                    <span class="badge bg-success">Active</span>
-                                </div>
-                                <p class="mb-2"><strong>Status:</strong> Open until September 30, 2025</p>
-                                <p class="mb-0">Course registration portal is now active. Students are advised to complete registration early to avoid last-minute rush.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-lg-4 mb-4">
-                    <div class="card shadow-sm">
-                        <div class="card-header bg-primary text-white">
-                            <h5 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Important Dates</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="timeline">
-                                <div class="timeline-item mb-3">
-                                    <div class="timeline-date">Aug 26</div>
-                                    <div class="timeline-content">
-                                        <h6>Second Semester Begins</h6>
-                                        <p class="small text-muted">Lectures commence</p>
-                                    </div>
-                                </div>
-                                <div class="timeline-item mb-3">
-                                    <div class="timeline-date">Aug 30</div>
-                                    <div class="timeline-content">
-                                        <h6>Project Report Submission</h6>
-                                        <p class="small text-muted">500L students deadline</p>
-                                    </div>
-                                </div>
-                                <div class="timeline-item mb-3">
-                                    <div class="timeline-date">Sep 2-6</div>
-                                    <div class="timeline-content">
-                                        <h6>Project Defense Week</h6>
-                                        <p class="small text-muted">Final year presentations</p>
-                                    </div>
-                                </div>
-                                <div class="timeline-item mb-3">
-                                    <div class="timeline-date">Sep 15</div>
-                                    <div class="timeline-content">
-                                        <h6>IT Registration Deadline</h6>
-                                        <p class="small text-muted">400L students</p>
-                                    </div>
-                                </div>
-                                <div class="timeline-item mb-3">
-                                    <div class="timeline-date">Sep 30</div>
-                                    <div class="timeline-content">
-                                        <h6>Course Registration Ends</h6>
-                                        <p class="small text-muted">All levels</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="foot-bottom">
+            <p>&copy; 2025 AEE — Agricultural &amp; Environmental Engineering, University of Ibadan. All rights reserved. | Designed with excellence for academic distinction — <strong style="color:var(--green-light);">Emmyfest</strong></p>
         </div>
-    </section>
+    </div>
+</footer>
 
-    <!-- Examination Schedule Section -->
-    <section id="exam-schedule" class="py-5 bg-light">
-        <div class="container">
-            <div class="text-center mb-5">
-                <h2 class="section-title">Examination Timetable</h2>
-                <div class="title-underline"></div>
-                <p class="lead">2024/2025 Academic Session - Second Semester</p>
-            </div>
-            
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="card shadow-sm">
-                        <div class="card-header bg-success text-white">
-                            <h5 class="mb-0"><i class="fas fa-calendar-check me-2"></i>Second Semester Examination Schedule</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-striped table-hover">
-                                    <thead class="table-dark">
-                                        <tr>
-                                            <th>Date</th>
-                                            <th>Time</th>
-                                            <th>Course Code</th>
-                                            <th>Course Title</th>
-                                            <th>Level</th>
-                                            <th>Venue</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>Dec 2, 2025</td>
-                                            <td>9:00 AM</td>
-                                            <td>TAE 212</td>
-                                            <td>Principles of Farm Mechanization</td>
-                                            <td>200L</td>
-                                            <td>LT 1, Faculty of Technology</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Dec 3, 2025</td>
-                                            <td>9:00 AM</td>
-                                            <td>TAE 312</td>
-                                            <td>Agricultural Processing Engineering I</td>
-                                            <td>300L</td>
-                                            <td>LT 2, Faculty of Technology</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Dec 4, 2025</td>
-                                            <td>2:00 PM</td>
-                                            <td>TAE 412</td>
-                                            <td>Engineering Properties of Plants and Animal Materials</td>
-                                            <td>400L</td>
-                                            <td>AEE Conference Hall</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Dec 5, 2025</td>
-                                            <td>9:00 AM</td>
-                                            <td>TAE 514</td>
-                                            <td>Irrigation Engineering</td>
-                                            <td>500L</td>
-                                            <td>AEE Laboratory</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Dec 6, 2025</td>
-                                            <td>9:00 AM</td>
-                                            <td>TAE 315</td>
-                                            <td>Soil Mechanics for Agricultural Engineers</td>
-                                            <td>300L</td>
-                                            <td>LT 1, Faculty of Technology</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Dec 7, 2025</td>
-                                            <td>2:00 PM</td>
-                                            <td>TAE 415</td>
-                                            <td>Hydraulics for Agricultural Engineers</td>
-                                            <td>400L</td>
-                                            <td>LT 2, Faculty of Technology</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Dec 8, 2025</td>
-                                            <td>9:00 AM</td>
-                                            <td>TAE 522</td>
-                                            <td>Agricultural Materials Handling</td>
-                                            <td>500L</td>
-                                            <td>AEE Conference Hall</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Dec 9, 2025</td>
-                                            <td>9:00 AM</td>
-                                            <td>TAE 414</td>
-                                            <td>Design of Agricultural Structures</td>
-                                            <td>400L</td>
-                                            <td>AEE Laboratory</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Dec 10, 2025</td>
-                                            <td>2:00 PM</td>
-                                            <td>TAE 313</td>
-                                            <td>Farm Power and Maintenance I</td>
-                                            <td>300L</td>
-                                            <td>LT 1, Faculty of Technology</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Dec 11, 2025</td>
-                                            <td>9:00 AM</td>
-                                            <td>TAE 515</td>
-                                            <td>Drainage Engineering</td>
-                                            <td>500L</td>
-                                            <td>AEE Conference Hall</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            
-                            <div class="mt-4">
-                                <div class="alert alert-info">
-                                    <h6><i class="fas fa-info-circle me-2"></i>Examination Guidelines:</h6>
-                                    <ul class="mb-0">
-                                        <li>Students must arrive 30 minutes before exam time</li>
-                                        <li>Valid student ID is required for admission</li>
-                                        <li>Mobile phones and unauthorized materials are prohibited</li>
-                                        <li>Late arrival beyond 30 minutes will not be permitted</li>
-                                        <li>Examination results will be released within 4 weeks</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script>
+    /* Scroll-triggered fade-up — same pattern as index.html */
+    const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.fu').forEach(el => obs.observe(el));
 
-    <!-- Class Timetable Section -->
-    <section id="class-timetable" class="py-5">
-        <div class="container">
-            <div class="text-center mb-5">
-                <h2 class="section-title">Class Timetable</h2>
-                <div class="title-underline"></div>
-                <p class="lead">Weekly Class Schedule - Second Semester 2024/2025</p>
-            </div>
-            
-            <!-- Level Tabs -->
-            <ul class="nav nav-pills justify-content-center mb-4" id="levelTabs" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="level200-tab" data-bs-toggle="pill" data-bs-target="#level200" type="button" role="tab">200 Level</button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="level300-tab" data-bs-toggle="pill" data-bs-target="#level300" type="button" role="tab">300 Level</button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="level400-tab" data-bs-toggle="pill" data-bs-target="#level400" type="button" role="tab">400 Level</button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="level500-tab" data-bs-toggle="pill" data-bs-target="#level500" type="button" role="tab">500 Level</button>
-                </li>
-            </ul>
-            
-            <div class="tab-content" id="levelTabsContent">
-                <!-- 200 Level Timetable -->
-                <div class="tab-pane fade show active" id="level200" role="tabpanel">
-                    <div class="card shadow-sm">
-                        <div class="card-header bg-primary text-white">
-                            <h5 class="mb-0">200 Level - Second Semester Timetable</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-bordered">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>Time</th>
-                                            <th>Monday</th>
-                                            <th>Tuesday</th>
-                                            <th>Wednesday</th>
-                                            <th>Thursday</th>
-                                            <th>Friday</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td><strong>8:00-9:00</strong></td>
-                                            <td>TAE 212<br><small>Principles of Farm Mechanization</small><br><em>LT1</em></td>
-                                            <td>TME 212<br><small>Engineering Mechanics</small><br><em>LT2</em></td>
-                                            <td>-</td>
-                                            <td>TAE 213<br><small>Thermodynamics</small><br><em>LT1</em></td>
-                                            <td>TAE 214<br><small>Lab Session</small><br><em>AEE Lab</em></td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>9:00-10:00</strong></td>
-                                            <td>MAT 241<br><small>Ordinary Differential Equations</small><br><em>LT3</em></td>
-                                            <td>TAE 211<br><small>Intro to AEE</small><br><em>LT1</em></td>
-                                            <td>TME 211<br><small>AutoCAD</small><br><em>Computer Lab</em></td>
-                                            <td>-</td>
-                                            <td>TAE 214<br><small>Lab Session</small><br><em>AEE Lab</em></td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>10:00-11:00</strong></td>
-                                            <td>-</td>
-                                            <td>TAE 212<br><small>Principles of Farm Mechanization</small><br><em>LT1</em></td>
-                                            <td>TME 212<br><small>Engineering Mechanics</small><br><em>LT2</em></td>
-                                            <td>MAT 241<br><small>Ordinary Differential Equations</small><br><em>LT3</em></td>
-                                            <td>-</td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>11:00-12:00</strong></td>
-                                            <td>TME 213<br><small>Thermodynamics</small><br><em>LT2</em></td>
-                                            <td>-</td>
-                                            <td>TAE 211<br><small>Intro to AEE</small><br><em>LT1</em></td>
-                                            <td>TME 211<br><small>AutoCAD</small><br><em>Computer Lab</em></td>
-                                            <td>-</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 300 Level Timetable -->
-                <div class="tab-pane fade" id="level300" role="tabpanel">
-                    <div class="card shadow-sm">
-                        <div class="card-header bg-success text-white">
-                            <h5 class="mb-0">300 Level - Second Semester Timetable</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-bordered">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>Time</th>
-                                            <th>Monday</th>
-                                            <th>Tuesday</th>
-                                            <th>Wednesday</th>
-                                            <th>Thursday</th>
-                                            <th>Friday</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td><strong>8:00-9:00</strong></td>
-                                            <td>TAE 312<br><small>Agricultural Processing Engineering I</small><br><em>LT1</em></td>
-                                            <td>TAE 315<br><small>Soil Mechanics for Agricultural Engineers</small><br><em>LT2</em></td>
-                                            <td>-</td>
-                                            <td>TAE 314<br><small>Advanced Computer Programming</small><br><em>Computer Lab</em></td>
-                                            <td>TAE 316<br><small>Lab Session</small><br><em>AEE Lab</em></td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>9:00-10:00</strong></td>
-                                            <td>TAE 313<br><small>Farm Power and Maintenance I</small><br><em>LT1</em></td>
-                                            <td>TME 322<br><small>Mechanics of Machines</small><br><em>LT2</em></td>
-                                            <td>TAE 311<br><small>Soil and Water Conservation Engineering I</small><br><em>LT1</em></td>
-                                            <td>-</td>
-                                            <td>TAE 316<br><small>Lab Session</small><br><em>AEE Lab</em></td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>10:00-11:00</strong></td>
-                                            <td>-</td>
-                                            <td>TAE 312<br><small>Agricultural Processing Engineering I</small><br><em>LT1</em></td>
-                                            <td>TAE 314<br><small>Advanced Computer Programming</small><br><em>Computer Lab</em></td>
-                                            <td>TAE 310<br><small>Farm Buildings and Structures</small><br><em>LT2</em></td>
-                                            <td>-</td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>11:00-12:00</strong></td>
-                                            <td>TAE 315<br><small>Soil Mechanics for Agricultural Engineers</small><br><em>LT2</em></td>
-                                            <td>-</td>
-                                            <td>TAE 313<br><small>Farm Power and Maintenance I</small><br><em>LT1</em></td>
-                                            <td>TME 322<br><small>Mechanics of Machines</small><br><em>LT2</em></td>
-                                            <td>-</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 400 Level Timetable -->
-                <div class="tab-pane fade" id="level400" role="tabpanel">
-                    <div class="card shadow-sm">
-                        <div class="card-header bg-info text-white">
-                            <h5 class="mb-0">400 Level - Second Semester Timetable</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-bordered">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>Time</th>
-                                            <th>Monday</th>
-                                            <th>Tuesday</th>
-                                            <th>Wednesday</th>
-                                            <th>Thursday</th>
-                                            <th>Friday</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td><strong>8:00-9:00</strong></td>
-                                            <td>TAE 412<br><small>Engineering Properties of Plants and Animal Materials</small><br><em>LT1</em></td>
-                                            <td>TAE 415<br><small>Hydraulics for Agricultural Engineers</small><br><em>LT2</em></td>
-                                            <td>-</td>
-                                            <td>TAE 414<br><small>Design of Agricultural Structures</small><br><em>LT1</em></td>
-                                            <td>TAE 416<br><small>Lab/Project Work</small><br><em>AEE Lab</em></td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>9:00-10:00</strong></td>
-                                            <td>TAE 413<br><small>Farm Power and Maintenance II</small><br><em>LT1</em></td>
-                                            <td>MAT 351<br><small>Numerical Analysis</small><br><em>LT3</em></td>
-                                            <td>TAE 411<br><small>Hydrology for Agricultural Engineer</small><br><em>LT1</em></td>
-                                            <td>-</td>
-                                            <td>TAE 416<br><small>Lab/Project Work</small><br><em>AEE Lab</em></td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>10:00-11:00</strong></td>
-                                            <td>-</td>
-                                            <td>TAE 412<br><small>Engineering Properties of Plants and Animal Materials</small><br><em>LT1</em></td>
-                                            <td>TAE 414<br><small>Design of Agricultural Structures</small><br><em>LT1</em></td>
-                                            <td>TAE 415<br><small>Hydraulics for Agricultural Engineers</small><br><em>LT2</em></td>
-                                            <td>-</td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>11:00-12:00</strong></td>
-                                            <td>TAE 411<br><small>Hydrology for Agricultural Engineer</small><br><em>LT1</em></td>
-                                            <td>-</td>
-                                            <td>TAE 413<br><small>Farm Power and Maintenance II</small><br><em>LT1</em></td>
-                                            <td>MAT 351<br><small>Numerical Analysis</small><br><em>LT3</em></td>
-                                            <td>-</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 500 Level Timetable -->
-                <div class="tab-pane fade" id="level500" role="tabpanel">
-                    <div class="card shadow-sm">
-                        <div class="card-header bg-warning text-dark">
-                            <h5 class="mb-0">500 Level - Second Semester Timetable</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-bordered">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>Time</th>
-                                            <th>Monday</th>
-                                            <th>Tuesday</th>
-                                            <th>Wednesday</th>
-                                            <th>Thursday</th>
-                                            <th>Friday</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td><strong>8:00-9:00</strong></td>
-                                            <td>TAE 521<br><small>Agricultural Machinery II</small><br><em>LT1</em></td>
-                                            <td>TAE 514<br><small>Irrigation Engineering</small><br><em>LT2</em></td>
-                                            <td>-</td>
-                                            <td>TAE 522<br><small>Agricultural Materials Handling</small><br><em>LT1</em></td>
-                                            <td>TAE 523<br><small>Project Work</small><br><em>Individual</em></td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>9:00-10:00</strong></td>
-                                            <td>TAE 512<br><small>Soil and Water Conservation Engineering II</small><br><em>LT1</em></td>
-                                            <td>TAE 515<br><small>Drainage Engineering</small><br><em>LT2</em></td>
-                                            <td>TAE 511<br><small>Agricultural Machinery I</small><br><em>LT1</em></td>
-                                            <td>-</td>
-                                            <td>TAE 523<br><small>Project Work</small><br><em>Individual</em></td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>10:00-11:00</strong></td>
-                                            <td>-</td>
-                                            <td>TAE 521<br><small>Agricultural Machinery II</small><br><em>LT1</em></td>
-                                            <td>TAE 513<br><small>Agricultural Processing Engineering II</small><br><em>LT1</em></td>
-                                            <td>TAE 514<br><small>Irrigation Engineering</small><br><em>LT2</em></td>
-                                            <td>-</td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>11:00-12:00</strong></td>
-                                            <td>TAE 513<br><small>Agricultural Processing Engineering II</small><br><em>LT1</em></td>
-                                            <td>-</td>
-                                            <td>TAE 512<br><small>Soil and Water Conservation Engineering II</small><br><em>LT1</em></td>
-                                            <td>TAE 522<br><small>Agricultural Materials Handling</small><br><em>LT1</em></td>
-                                            <td>-</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+    /* Timetable level switcher */
+    function switchLevel(lv, btn) {
+        document.querySelectorAll('.tt-pane').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.lp-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('tt' + lv).classList.add('active');
+        btn.classList.add('active');
+    }
 
-    <!-- Student Affairs Section -->
-    <section id="student-affairs" class="py-5 bg-light">
-        <div class="container">
-            <div class="text-center mb-5">
-                <h2 class="section-title">Student Affairs & Support Services</h2>
-                <div class="title-underline"></div>
-                <p class="lead">Comprehensive support for your academic and personal development</p>
-            </div>
-            
-            <div class="row">
-                <!-- Academic Support -->
-                <div class="col-lg-6 mb-4">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-header bg-primary text-white">
-                            <h5 class="mb-0"><i class="fas fa-graduation-cap me-2"></i>Academic Support Services</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="support-item mb-4">
-                                <h6 class="text-primary"><i class="fas fa-chalkboard-teacher me-2"></i>Academic Counseling</h6>
-                                <p class="small mb-2">Get guidance on course selection, academic planning, and career development.</p>
-                                <p class="small text-muted"><strong>Contact:</strong> Dr. H. A. Alabi - ha.alabi@ui.edu.ng</p>
-                            </div>
-                            
-                            <div class="support-item mb-4">
-                                <h6 class="text-success"><i class="fas fa-users me-2"></i>Peer Tutoring Program</h6>
-                                <p class="small mb-2">Connect with senior students for additional academic support and mentoring.</p>
-                                <p class="small text-muted"><strong>Coordinator:</strong> Student Affairs Office</p>
-                            </div>
-                            
-                            <div class="support-item mb-4">
-                                <h6 class="text-info"><i class="fas fa-laptop me-2"></i>Computer Lab Access</h6>
-                                <p class="small mb-2">24/7 access to computer laboratory for research and assignments.</p>
-                                <p class="small text-muted"><strong>Location:</strong> AEE Building, Ground Floor</p>
-                            </div>
-                            
-                            <div class="support-item">
-                                <h6 class="text-warning"><i class="fas fa-book me-2"></i>Library Resources</h6>
-                                <p class="small mb-2">Access to specialized agricultural engineering books and journals.</p>
-                                <p class="small text-muted"><strong>Hours:</strong> Mon-Fri 8AM-6PM, Sat 9AM-2PM</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Personal Support -->
-                <div class="col-lg-6 mb-4">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-header bg-success text-white">
-                            <h5 class="mb-0"><i class="fas fa-heart me-2"></i>Personal Support Services</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="support-item mb-4">
-                                <h6 class="text-primary"><i class="fas fa-user-md me-2"></i>Counseling Services</h6>
-                                <p class="small mb-2">Professional counseling for personal, academic, and career-related challenges.</p>
-                                <p class="small text-muted"><strong>Contact:</strong> University Counseling Center</p>
-                            </div>
-                            
-                            <div class="support-item mb-4">
-                                <h6 class="text-success"><i class="fas fa-medkit me-2"></i>Health Services</h6>
-                                <p class="small mb-2">On-campus health center providing medical care and health education.</p>
-                                <p class="small text-muted"><strong>Location:</strong> University Health Center</p>
-                            </div>
-                            
-                            <div class="support-item mb-4">
-                                <h6 class="text-info"><i class="fas fa-money-bill-wave me-2"></i>Financial Aid</h6>
-                                <p class="small mb-2">Information about scholarships, grants, and financial assistance programs.</p>
-                                <p class="small text-muted"><strong>Contact:</strong> Student Financial Services</p>
-                            </div>
-                            
-                            <div class="support-item">
-                                <h6 class="text-warning"><i class="fas fa-home me-2"></i>Accommodation Services</h6>
-                                <p class="small mb-2">Assistance with on-campus and off-campus housing arrangements.</p>
-                                <p class="small text-muted"><strong>Contact:</strong> Accommodation Office</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Student Organizations -->
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="card shadow-sm">
-                        <div class="card-header bg-info text-white">
-                            <h5 class="mb-0"><i class="fas fa-users me-2"></i>Student Organizations & Activities</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <h6 class="text-primary">Department Student Association (AEE Students)</h6>
-                                    <p class="small">Official student body representing all AEE students. Organizes academic and social activities.</p>
-                                    <p class="small text-muted"><strong>President:</strong> [Student Name] - Contact via departmental office</p>
-                                    
-                                    <h6 class="text-success mt-4">Professional Society (NIAE Student Chapter)</h6>
-                                    <p class="small">Student chapter of Nigerian Institute of Agricultural Engineers promoting professional development.</p>
-                                    <p class="small text-muted"><strong>Coordinator:</strong> Prof. A. I. Bamgboye</p>
-                                </div>
-                                
-                                <div class="col-md-6">
-                                    <h6 class="text-warning">Engineering Students Society</h6>
-                                    <p class="small">Inter-departmental engineering society fostering collaboration and innovation.</p>
-                                    <p class="small text-muted"><strong>Faculty Advisor:</strong> Engineering Faculty</p>
-                                    
-                                    <h6 class="text-info mt-4">Research & Innovation Club</h6>
-                                    <p class="small">Student-led research initiatives and innovation projects in agricultural engineering.</p>
-                                    <p class="small text-muted"><strong>Meetings:</strong> Every Friday 4PM, AEE Conference Hall</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Resources & Downloads Section -->
-    <section class="py-5">
-        <div class="container">
-            <div class="text-center mb-5">
-                <h2 class="section-title">Academic Resources & Downloads</h2>
-                <div class="title-underline"></div>
-                <p class="lead">Essential documents and resources for your academic journey</p>
-            </div>
-            
-            <div class="row">
-                <div class="col-lg-4 mb-4">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body text-center">
-                            <i class="fas fa-file-pdf fa-3x text-danger mb-3"></i>
-                            <h5 class="card-title">Course Materials</h5>
-                            <p class="card-text">Download comprehensive course materials for all levels.</p>
-                            <div class="btn-group-vertical w-100">
-                                <a href="https://drive.google.com/drive/folders/1f9kkHIMO2qW3ZwFmbeEZZozLJy_w0_Du" class="btn btn-outline-primary btn-sm mb-2">100 Level Materials</a>
-                                <a href="https://drive.google.com/drive/folders/1f9kkHIMO2qW3ZwFmbeEZZozLJy_w0_Du" class="btn btn-outline-primary btn-sm mb-2">200 Level Materials</a>
-                                <a href="https://drive.google.com/drive/folders/1f9kkHIMO2qW3ZwFmbeEZZozLJy_w0_Du" class="btn btn-outline-success btn-sm mb-2">300 Level Materials</a>
-                                <a href="#" class="btn btn-outline-info btn-sm mb-2">400 Level Materials</a>
-                                <a href="#" class="btn btn-outline-warning btn-sm">500 Level Materials</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-lg-4 mb-4">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body text-center">
-                            <i class="fas fa-file-alt fa-3x text-primary mb-3"></i>
-                            <h5 class="card-title">Forms & Documents</h5>
-                            <p class="card-text">Access important forms and official documents.</p>
-                            <div class="btn-group-vertical w-100">
-                                <a href="#" class="btn btn-outline-primary btn-sm mb-2">Course Registration Form</a>
-                                <a href="#" class="btn btn-outline-success btn-sm mb-2">IT Registration Form</a>
-                                <a href="#" class="btn btn-outline-info btn-sm mb-2">Project Proposal Form</a>
-                                <a href="#" class="btn btn-outline-warning btn-sm">Transcript Request</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-lg-4 mb-4">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body text-center">
-                            <i class="fas fa-calendar-download fa-3x text-success mb-3"></i>
-                            <h5 class="card-title">Academic Calendar</h5>
-                            <p class="card-text">Download the complete academic calendar with important dates.</p>
-                            <div class="btn-group-vertical w-100">
-                                <a href="#" class="btn btn-outline-primary btn-sm mb-2">2024/2025 Calendar</a>
-                                <a href="#" class="btn btn-outline-success btn-sm mb-2">Exam Schedule</a>
-                                <a href="#" class="btn btn-outline-info btn-sm mb-2">Holiday Calendar</a>
-                                <a href="#" class="btn btn-outline-warning btn-sm">IT Period Schedule</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="bg-dark text-white py-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-4 mb-4">
-                    <h5 class="text-success mb-3">Agricultural & Environmental Engineering</h5>
-                    <p class="small">Pioneering sustainable solutions for agriculture and environment through innovative engineering practices at the University of Ibadan.</p>
-                    <div class="social-links">
-                        <a href="#" class="text-white me-3"><i class="fab fa-facebook-f fa-lg"></i></a>
-                        <a href="#" class="text-white me-3"><i class="fab fa-twitter fa-lg"></i></a>
-                        <a href="#" class="text-white me-3"><i class="fab fa-linkedin-in fa-lg"></i></a>
-                        <a href="#" class="text-white"><i class="fab fa-instagram fa-lg"></i></a>
-                    </div>
-                </div>
-                <div class="col-lg-2 mb-4">
-                    <h6 class="text-success mb-3">Quick Links</h6>
-                    <ul class="list-unstyled small">
-                        <li><a href="{{ url_for('index') }}" class="text-light text-decoration-none">Home</a></li>
-                        <li><a href="{{ url_for('staff') }}" class="text-light text-decoration-none">Faculty</a></li>
-                        <li><a href="{{ url_for('payment') }}" class="text-light text-decoration-none">Payment</a></li>
-                        <li><a href="{{ url_for('news') }}" class="text-light text-decoration-none">Academic Programme</a></li>
-                        <li><a href="{{ url_for('index') }}#contact" class="text-light text-decoration-none">Contact</a></li>
-                    </ul>
-                </div>
-                <div class="col-lg-3 mb-4">
-                    <h6 class="text-success mb-3">Student Services</h6>
-                    <ul class="list-unstyled small">
-                        <li>Academic Counseling</li>
-                        <li>Course Registration</li>
-                        <li>Examination Services</li>
-                        <li>Student Affairs</li>
-                    </ul>
-                </div>
-                <div class="col-lg-3 mb-4">
-                    <h6 class="text-success mb-3">Contact Info</h6>
-                    <p class="small mb-1">
-                        <i class="fas fa-map-marker-alt me-2"></i>
-                        Faculty of Technology, University of Ibadan
-                    </p>
-                    <p class="small mb-1">
-                        <i class="fas fa-phone me-2"></i>
-                        +234-903-576-2341
-                    </p>
-                    <p class="small mb-1">
-                        <i class="fas fa-envelope me-2"></i>
-                        info.agric@ui.edu.ng
-                    </p>
-                </div>
-            </div>
-            <hr class="my-4">
-            <div class="row">
-                <div class="col-lg-12 text-center">
-                    <p class="small mb-0">
-                        &copy; 2025 AEE 
-                        All rights reserved. | Designed with excellence for academic distinction. - Emmyfest
-                    </p>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    /* Active nav on scroll */
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks  = document.querySelectorAll('#navbar .nav-link');
+    window.addEventListener('scroll', () => {
+        let cur = '';
+        sections.forEach(s => { if (window.scrollY >= s.offsetTop - 110) cur = s.id; });
+        navLinks.forEach(a => {
+            a.classList.remove('active');
+            if (a.getAttribute('href') === '#' + cur) a.classList.add('active');
+        });
+    });
+</script>
 </body>
 </html>
