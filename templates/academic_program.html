@@ -17,6 +17,513 @@
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+
+    <style>
+        /* ══════════════════════════════════════════════════════
+           DESIGN TOKENS — identical to index.html & students.html
+        ══════════════════════════════════════════════════════ */
+        :root {
+            --blue:         #0d6efd;
+            --blue-dark:    #0a4fa0;
+            --green-deep:   #1a3d2b;
+            --green-mid:    #2d6a4f;
+            --green-accent: #40916c;
+            --green-light:  #74c69d;
+            --gold:         #d4a017;
+            --gold-light:   #f0c040;
+            --cream:        #f8f4ef;
+            --cream-alt:    #eaf4ef;
+            --cream-dark:   #ede8e0;
+            --charcoal:     #1c1c1e;
+            --muted:        #6b7280;
+            --white:        #ffffff;
+            --danger-r:     #b91c1c;
+            --sh-sm:        0 2px 12px rgba(0,0,0,.07);
+            --sh-md:        0 8px 32px rgba(0,0,0,.12);
+            --sh-lg:        0 20px 60px rgba(0,0,0,.18);
+            --r:            12px;
+            --rl:           20px;
+            --ease:         cubic-bezier(.4,0,.2,1);
+        }
+
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+        html { scroll-behavior:smooth; }
+        body {
+            font-family:'Outfit',sans-serif;
+            background:var(--cream);
+            color:var(--charcoal);
+            line-height:1.75;
+            overflow-x:hidden;
+        }
+        h1,h2,h3,h4,h5,h6 { font-family:'Playfair Display',serif; line-height:1.2; }
+        a { text-decoration:none; }
+
+        ::-webkit-scrollbar { width:6px; }
+        ::-webkit-scrollbar-track { background:#e8f0e9; }
+        ::-webkit-scrollbar-thumb { background:var(--green-accent); border-radius:4px; }
+
+        .flash-messages { position:fixed; top:80px; right:20px; z-index:9999; width:340px; }
+
+        /* ── Shared utilities ── */
+        .section-title {
+            font-family:'Playfair Display',serif;
+            font-size:clamp(1.9rem,3.5vw,2.75rem);
+            font-weight:700; color:var(--green-deep);
+        }
+        .section-title.light { color:var(--white); }
+        .title-underline {
+            width:60px; height:3px;
+            background:linear-gradient(90deg,var(--blue),var(--green-accent));
+            border-radius:3px; margin:10px auto 18px;
+        }
+        .section-lead { font-size:.97rem; color:var(--muted); max-width:600px; margin:0 auto; }
+
+        /* fade-up */
+        .fu { opacity:0; transform:translateY(26px); transition:opacity .6s var(--ease),transform .6s var(--ease); }
+        .fu.in { opacity:1; transform:translateY(0); }
+        .fu:nth-child(2){transition-delay:.08s}
+        .fu:nth-child(3){transition-delay:.16s}
+        .fu:nth-child(4){transition-delay:.24s}
+        .fu:nth-child(5){transition-delay:.32s}
+
+        /* dot-bg */
+        .dot-bg {
+            pointer-events:none; position:absolute; inset:0;
+            background-image:radial-gradient(var(--green-accent) 1px,transparent 1px);
+            background-size:26px 26px; opacity:.055;
+        }
+
+        /* wave */
+        .wave { line-height:0; }
+        .wave svg { display:block; }
+
+        /* ══════════════════════════════════════════════════════
+           HERO
+        ══════════════════════════════════════════════════════ */
+        .hero-section {
+            background: linear-gradient(135deg,var(--green-deep) 0%,#0c2218 50%,var(--blue-dark) 100%);
+            position:relative; overflow:hidden;
+            padding-top:80px;
+        }
+        .hero-section::before {
+            content:'';
+            position:absolute; inset:0;
+            background-image:radial-gradient(var(--green-accent) 1px,transparent 1px);
+            background-size:32px 32px; opacity:.055;
+        }
+        .hero-section::after {
+            content:'';
+            position:absolute; bottom:-2px; left:0; right:0; height:80px;
+            background:var(--cream);
+            clip-path:ellipse(55% 100% at 50% 100%);
+        }
+        .hero-glow {
+            position:absolute; top:-100px; right:-100px;
+            width:500px; height:500px; border-radius:50%;
+            background:radial-gradient(circle,rgba(212,160,23,.12),transparent 70%);
+            pointer-events:none;
+        }
+        .hero-glow2 {
+            position:absolute; bottom:-60px; left:-80px;
+            width:350px; height:350px; border-radius:50%;
+            background:radial-gradient(circle,rgba(64,145,108,.1),transparent 70%);
+            pointer-events:none;
+        }
+
+        .hero-eyebrow {
+            display:inline-flex; align-items:center; gap:.5rem;
+            background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2);
+            color:var(--gold-light); font-size:.72rem; font-weight:700;
+            letter-spacing:.13em; text-transform:uppercase;
+            padding:.4rem 1.1rem; border-radius:50px; margin-bottom:1.6rem;
+        }
+
+        .hero-stats {
+            display:flex; justify-content:center; flex-wrap:wrap;
+            gap:2rem; margin-top:3rem; padding-top:2.5rem;
+            border-top:1px solid rgba(255,255,255,.1);
+        }
+        .hero-stat { text-align:center; }
+        .hero-stat .num {
+            font-family:'Playfair Display',serif; font-size:2.2rem; font-weight:700;
+            color:var(--gold-light); line-height:1; display:block;
+        }
+        .hero-stat .lbl { font-size:.72rem; color:rgba(255,255,255,.55); text-transform:uppercase; letter-spacing:.08em; }
+
+        /* ══════════════════════════════════════════════════════
+           PROGRAM OVERVIEW CARDS
+        ══════════════════════════════════════════════════════ */
+        #overview { padding:88px 0; background:var(--cream); position:relative; }
+        #overview::before {
+            content:''; position:absolute; top:0; left:0; right:0; height:4px;
+            background:linear-gradient(90deg,var(--blue),var(--green-accent),var(--gold));
+        }
+
+        .ov-card {
+            border-radius:var(--rl); background:var(--white);
+            border:1px solid rgba(0,0,0,.06); box-shadow:var(--sh-sm);
+            padding:32px 26px; height:100%; text-align:center;
+            transition:transform .35s var(--ease),box-shadow .35s var(--ease);
+            position:relative; overflow:hidden;
+        }
+        .ov-card::before {
+            content:''; position:absolute; bottom:0; left:0; right:0; height:3px;
+            transform:scaleX(0); transition:transform .35s;
+        }
+        .ov-card:hover { transform:translateY(-6px); box-shadow:var(--sh-md); }
+        .ov-card:hover::before { transform:scaleX(1); }
+        .ov-card.c1::before { background:linear-gradient(90deg,var(--blue),var(--blue-dark)); }
+        .ov-card.c2::before { background:linear-gradient(90deg,var(--green-mid),var(--green-accent)); }
+        .ov-card.c3::before { background:linear-gradient(90deg,var(--gold),var(--gold-light)); }
+        .ov-card.c4::before { background:linear-gradient(90deg,var(--danger-r),#dc2626); }
+
+        .ov-icon {
+            width:64px; height:64px; border-radius:18px;
+            display:flex; align-items:center; justify-content:center;
+            font-size:1.6rem; margin:0 auto 18px;
+            transition:transform .3s var(--ease);
+        }
+        .ov-card:hover .ov-icon { transform:scale(1.1) rotate(-5deg); }
+        .ov-icon.blue  { background:linear-gradient(135deg,rgba(13,110,253,.12),rgba(13,110,253,.22)); color:var(--blue); }
+        .ov-icon.green { background:linear-gradient(135deg,rgba(45,106,79,.1),rgba(64,145,108,.22)); color:var(--green-mid); }
+        .ov-icon.gold  { background:linear-gradient(135deg,rgba(212,160,23,.12),rgba(240,192,64,.2)); color:var(--gold); }
+        .ov-icon.red   { background:linear-gradient(135deg,rgba(185,28,28,.1),rgba(220,38,38,.18)); color:var(--danger-r); }
+
+        .ov-title { font-family:'Playfair Display',serif; font-size:1.1rem; font-weight:700; color:var(--green-deep); margin-bottom:8px; }
+        .ov-val   { font-size:1.4rem; font-weight:700; color:var(--blue); margin-bottom:6px; }
+        .ov-desc  { font-size:.82rem; color:var(--muted); line-height:1.6; }
+
+        /* ══════════════════════════════════════════════════════
+           COURSE STRUCTURE
+        ══════════════════════════════════════════════════════ */
+        #courses { padding:80px 0; background:linear-gradient(160deg,var(--cream-alt),var(--cream-dark)); }
+
+        /* Year nav pills */
+        .year-nav {
+            display:flex; flex-wrap:wrap; gap:10px;
+            justify-content:center; margin-bottom:36px;
+        }
+        .yn-btn {
+            display:flex; align-items:center; gap:8px;
+            padding:10px 22px; border-radius:10px;
+            font-size:.82rem; font-weight:700; cursor:pointer;
+            border:1.5px solid; transition:all .25s var(--ease);
+            background:transparent; letter-spacing:.03em;
+        }
+        .yn-btn .yn-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+
+        /* colours per level */
+        .yn-btn[data-yr="100"]      { border-color:var(--blue);       color:var(--blue); }
+        .yn-btn[data-yr="100"] .yn-dot { background:var(--blue); }
+        .yn-btn[data-yr="100"].active { background:var(--blue); color:#fff; box-shadow:0 4px 14px rgba(13,110,253,.35); }
+
+        .yn-btn[data-yr="200"]      { border-color:var(--green-mid);  color:var(--green-mid); }
+        .yn-btn[data-yr="200"] .yn-dot { background:var(--green-mid); }
+        .yn-btn[data-yr="200"].active { background:var(--green-mid); color:#fff; box-shadow:0 4px 14px rgba(45,106,79,.4); }
+
+        .yn-btn[data-yr="300"]      { border-color:#0891b2;           color:#0891b2; }
+        .yn-btn[data-yr="300"] .yn-dot { background:#0891b2; }
+        .yn-btn[data-yr="300"].active { background:#0891b2; color:#fff; box-shadow:0 4px 14px rgba(8,145,178,.4); }
+
+        .yn-btn[data-yr="400"]      { border-color:var(--gold);       color:var(--gold); }
+        .yn-btn[data-yr="400"] .yn-dot { background:var(--gold); }
+        .yn-btn[data-yr="400"].active { background:var(--gold); color:var(--green-deep); box-shadow:0 4px 14px rgba(212,160,23,.4); }
+
+        .yn-btn[data-yr="500"]      { border-color:var(--danger-r);   color:var(--danger-r); }
+        .yn-btn[data-yr="500"] .yn-dot { background:var(--danger-r); }
+        .yn-btn[data-yr="500"].active { background:var(--danger-r); color:#fff; box-shadow:0 4px 14px rgba(185,28,28,.4); }
+
+        .yr-pane { display:none; }
+        .yr-pane.active { display:block; }
+
+        /* Course card wrap */
+        .course-wrap {
+            border-radius:var(--rl); overflow:hidden;
+            box-shadow:var(--sh-md); border:1px solid rgba(0,0,0,.06);
+        }
+        .cw-header {
+            padding:22px 30px; display:flex; align-items:center;
+            justify-content:space-between; flex-wrap:wrap; gap:12px;
+        }
+        .cw-header.l100 { background:linear-gradient(135deg,var(--blue),var(--blue-dark)); }
+        .cw-header.l200 { background:linear-gradient(135deg,var(--green-mid),var(--green-accent)); }
+        .cw-header.l300 { background:linear-gradient(135deg,#0891b2,#0e7490); }
+        .cw-header.l400 { background:linear-gradient(135deg,var(--gold),var(--gold-light)); }
+        .cw-header.l500 { background:linear-gradient(135deg,var(--danger-r),#dc2626); }
+
+        .cw-header.l400 .cw-title,
+        .cw-header.l400 .cw-sub { color:var(--green-deep); }
+
+        .cw-title { font-family:'Playfair Display',serif; font-size:1.25rem; font-weight:700; color:#fff; margin:0; }
+        .cw-sub   { font-size:.75rem; color:rgba(255,255,255,.65); margin:0; margin-top:2px; }
+        .cw-badge {
+            background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.28);
+            color:#fff; font-size:.68rem; font-weight:700;
+            padding:5px 14px; border-radius:50px; letter-spacing:.06em; white-space:nowrap;
+        }
+        .cw-badge.dark { color:var(--green-deep); }
+
+        .cw-body { background:var(--white); }
+
+        .sem-grid { display:grid; grid-template-columns:1fr 1fr; }
+        @media(max-width:768px){ .sem-grid { grid-template-columns:1fr; } }
+
+        .sem-col { padding:26px 28px; }
+        .sem-col:first-child { border-right:1px solid rgba(0,0,0,.06); }
+        @media(max-width:768px){ .sem-col:first-child { border-right:none; border-bottom:1px solid rgba(0,0,0,.06); } }
+
+        .sem-label {
+            font-size:.68rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
+            margin-bottom:16px; padding:6px 14px; border-radius:6px;
+            display:inline-flex; align-items:center; gap:6px;
+        }
+        .sem-label.first { background:rgba(13,110,253,.08); color:var(--blue); }
+        .sem-label.second{ background:rgba(64,145,108,.08); color:var(--green-mid); }
+
+        /* Course table */
+        .c-table { width:100%; border-collapse:collapse; }
+        .c-table thead tr { background:var(--cream); }
+        .c-table th {
+            padding:9px 12px; font-size:.65rem; font-weight:700;
+            letter-spacing:.09em; text-transform:uppercase; color:var(--muted);
+            border-bottom:1.5px solid rgba(0,0,0,.08);
+        }
+        .c-table td { padding:10px 12px; font-size:.82rem; border-bottom:1px solid rgba(0,0,0,.05); color:var(--charcoal); }
+        .c-table tbody tr:last-child td { border-bottom:none; }
+        .c-table tbody tr:hover { background:rgba(26,61,43,.025); }
+
+        .c-code {
+            font-family:'Outfit',monospace; font-weight:700; font-size:.78rem;
+            white-space:nowrap;
+        }
+        .c-code.blue  { color:var(--blue); }
+        .c-code.green { color:var(--green-mid); }
+        .c-code.teal  { color:#0891b2; }
+        .c-code.gold  { color:var(--gold); }
+        .c-code.red   { color:var(--danger-r); }
+
+        .c-units {
+            display:inline-flex; align-items:center; justify-content:center;
+            width:26px; height:26px; border-radius:6px;
+            font-size:.72rem; font-weight:700;
+        }
+        .cu-blue  { background:rgba(13,110,253,.1); color:var(--blue); }
+        .cu-green { background:rgba(45,106,79,.1); color:var(--green-mid); }
+        .cu-teal  { background:rgba(8,145,178,.1); color:#0891b2; }
+        .cu-gold  { background:rgba(212,160,23,.12); color:var(--gold); }
+        .cu-red   { background:rgba(185,28,28,.1); color:var(--danger-r); }
+
+        /* Total bar */
+        .sem-total {
+            display:flex; align-items:center; justify-content:flex-end; gap:8px;
+            margin-top:12px; padding-top:10px; border-top:1px dashed rgba(0,0,0,.1);
+            font-size:.78rem; color:var(--muted);
+        }
+        .sem-total strong { font-size:.9rem; color:var(--green-deep); }
+
+        /* ══════════════════════════════════════════════════════
+           GRADUATION REQUIREMENTS
+        ══════════════════════════════════════════════════════ */
+        #graduation { padding:80px 0; background:var(--cream); position:relative; }
+
+        .grad-wrap {
+            border-radius:var(--rl); overflow:hidden;
+            box-shadow:var(--sh-md); border:1px solid rgba(0,0,0,.06);
+        }
+        .grad-hd {
+            background:linear-gradient(135deg,var(--green-deep) 0%,var(--green-mid) 100%);
+            padding:22px 30px; display:flex; align-items:center; gap:14px;
+        }
+        .grad-hd .g-icon {
+            width:44px; height:44px; background:rgba(255,255,255,.12); border-radius:12px;
+            display:flex; align-items:center; justify-content:center; font-size:1.2rem; color:var(--gold-light);
+        }
+        .grad-hd h4 { font-size:1.3rem; color:#fff; margin:0; }
+        .grad-hd p  { font-size:.74rem; color:rgba(255,255,255,.55); margin:0; }
+        .grad-body  { background:var(--white); padding:32px; }
+
+        .req-grid { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+        @media(max-width:768px){ .req-grid { grid-template-columns:1fr; } }
+
+        .req-card {
+            background:var(--cream); border-radius:var(--r);
+            border:1px solid rgba(0,0,0,.07); padding:22px;
+            transition:box-shadow .3s,transform .3s var(--ease);
+        }
+        .req-card:hover { box-shadow:var(--sh-sm); transform:translateY(-3px); }
+
+        .req-card-hd {
+            display:flex; align-items:center; gap:10px;
+            margin-bottom:16px; padding-bottom:12px;
+            border-bottom:1px dashed rgba(0,0,0,.08);
+        }
+        .req-card-hd .rh-icon {
+            width:38px; height:38px; border-radius:10px;
+            display:flex; align-items:center; justify-content:center; font-size:.95rem;
+        }
+        .rh-icon.blue  { background:rgba(13,110,253,.1); color:var(--blue); }
+        .rh-icon.green { background:rgba(64,145,108,.1); color:var(--green-accent); }
+        .req-card-hd h6 { font-size:.92rem; font-weight:700; color:var(--green-deep); margin:0; }
+
+        .req-list { list-style:none; display:flex; flex-direction:column; gap:8px; }
+        .req-list li {
+            display:flex; align-items:flex-start; gap:10px;
+            font-size:.83rem; color:var(--charcoal);
+        }
+        .req-list li::before {
+            content:''; width:6px; height:6px; border-radius:50%;
+            background:var(--green-accent); flex-shrink:0; margin-top:6px;
+        }
+
+        /* Class distribution */
+        .class-dist {
+            display:grid; grid-template-columns:repeat(5,1fr);
+            gap:14px; margin-top:28px; padding-top:24px;
+            border-top:1px dashed rgba(0,0,0,.08);
+        }
+        @media(max-width:768px){ .class-dist { grid-template-columns:repeat(3,1fr); } }
+
+        .cd-item { text-align:center; }
+        .cd-ring {
+            width:64px; height:64px; border-radius:50%;
+            display:flex; align-items:center; justify-content:center;
+            margin:0 auto 8px;
+            font-family:'Playfair Display',serif; font-size:1.1rem; font-weight:700;
+        }
+        .cd-ring.first { background:rgba(13,110,253,.12); color:var(--blue); border:2px solid rgba(13,110,253,.25); }
+        .cd-ring.second{ background:rgba(64,145,108,.12); color:var(--green-mid); border:2px solid rgba(64,145,108,.25); }
+        .cd-ring.third { background:rgba(8,145,178,.12); color:#0891b2; border:2px solid rgba(8,145,178,.25); }
+        .cd-ring.fourth{ background:rgba(212,160,23,.12); color:var(--gold); border:2px solid rgba(212,160,23,.25); }
+        .cd-ring.fifth { background:rgba(185,28,28,.12); color:var(--danger-r); border:2px solid rgba(185,28,28,.25); }
+
+        .cd-label { font-size:.72rem; color:var(--muted); line-height:1.3; }
+
+        /* ══════════════════════════════════════════════════════
+           CAREER PROSPECTS
+        ══════════════════════════════════════════════════════ */
+        #careers { padding:80px 0; background:linear-gradient(160deg,var(--cream-alt),var(--cream-dark)); position:relative; }
+
+        .career-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+        @media(max-width:991px){ .career-grid { grid-template-columns:repeat(2,1fr); } }
+        @media(max-width:576px){ .career-grid { grid-template-columns:1fr; } }
+
+        .career-card {
+            background:var(--white); border-radius:var(--rl);
+            border:1px solid rgba(0,0,0,.06); box-shadow:var(--sh-sm);
+            padding:28px 22px; text-align:center;
+            transition:transform .35s var(--ease),box-shadow .35s var(--ease);
+            position:relative; overflow:hidden;
+        }
+        .career-card::after {
+            content:''; position:absolute; bottom:0; left:0; right:0; height:3px;
+            transform:scaleX(0); transition:transform .35s; border-radius:0 0 var(--rl) var(--rl);
+        }
+        .career-card:hover { transform:translateY(-6px); box-shadow:var(--sh-md); }
+        .career-card:hover::after { transform:scaleX(1); }
+        .career-card.cc1::after { background:linear-gradient(90deg,var(--blue),var(--blue-dark)); }
+        .career-card.cc2::after { background:linear-gradient(90deg,var(--green-mid),var(--green-accent)); }
+        .career-card.cc3::after { background:linear-gradient(90deg,#0891b2,#0e7490); }
+        .career-card.cc4::after { background:linear-gradient(90deg,var(--gold),var(--gold-light)); }
+        .career-card.cc5::after { background:linear-gradient(90deg,var(--danger-r),#dc2626); }
+        .career-card.cc6::after { background:linear-gradient(90deg,var(--green-deep),var(--green-mid)); }
+
+        .career-icon {
+            width:62px; height:62px; border-radius:16px;
+            display:flex; align-items:center; justify-content:center;
+            font-size:1.55rem; margin:0 auto 16px;
+            transition:transform .3s var(--ease);
+        }
+        .career-card:hover .career-icon { transform:scale(1.1) rotate(-5deg); }
+        .ci1 { background:linear-gradient(135deg,rgba(13,110,253,.12),rgba(13,110,253,.22)); color:var(--blue); }
+        .ci2 { background:linear-gradient(135deg,rgba(45,106,79,.1),rgba(64,145,108,.22)); color:var(--green-mid); }
+        .ci3 { background:linear-gradient(135deg,rgba(8,145,178,.1),rgba(8,145,178,.22)); color:#0891b2; }
+        .ci4 { background:linear-gradient(135deg,rgba(212,160,23,.12),rgba(240,192,64,.2)); color:var(--gold); }
+        .ci5 { background:linear-gradient(135deg,rgba(185,28,28,.1),rgba(220,38,38,.18)); color:var(--danger-r); }
+        .ci6 { background:linear-gradient(135deg,rgba(26,61,43,.1),rgba(45,106,79,.2)); color:var(--green-deep); }
+
+        .career-title { font-family:'Playfair Display',serif; font-size:1.05rem; font-weight:700; color:var(--green-deep); margin-bottom:8px; }
+        .career-desc  { font-size:.82rem; color:var(--muted); line-height:1.6; }
+
+        /* ══════════════════════════════════════════════════════
+           POSTGRAD SECTION
+        ══════════════════════════════════════════════════════ */
+        #postgrad { padding:80px 0; background:var(--cream); }
+
+        .pg-wrap {
+            border-radius:var(--rl); overflow:hidden;
+            box-shadow:var(--sh-md); border:1px solid rgba(0,0,0,.06);
+            display:grid; grid-template-columns:1fr 1fr;
+        }
+        @media(max-width:768px){ .pg-wrap { grid-template-columns:1fr; } }
+
+        .pg-left {
+            background:linear-gradient(160deg,var(--green-deep) 0%,#0a1f14 100%);
+            padding:44px 36px; display:flex; flex-direction:column; justify-content:center;
+        }
+        .pg-left h3 { font-size:1.8rem; color:var(--white); margin-bottom:14px; }
+        .pg-left p  { font-size:.88rem; color:rgba(255,255,255,.65); line-height:1.75; margin-bottom:24px; }
+
+        .pg-badge-row { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:28px; }
+        .pg-badge {
+            background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.18);
+            color:rgba(255,255,255,.8); font-size:.72rem; font-weight:600;
+            padding:5px 12px; border-radius:6px;
+        }
+
+        .pg-cta {
+            display:inline-flex; align-items:center; gap:8px;
+            background:var(--gold); color:var(--green-deep);
+            padding:11px 24px; border-radius:9px; font-weight:700; font-size:.85rem;
+            transition:all .3s var(--ease);
+        }
+        .pg-cta:hover { background:var(--gold-light); transform:translateY(-2px); box-shadow:0 8px 22px rgba(212,160,23,.4); }
+
+        .pg-right { background:var(--white); padding:36px; }
+        .pg-right h5 {
+            font-family:'Playfair Display',serif; font-size:1.15rem;
+            color:var(--green-deep); margin-bottom:18px;
+            padding-bottom:12px; border-bottom:1px dashed rgba(0,0,0,.08);
+        }
+
+        .pg-prog-list { display:flex; flex-direction:column; gap:14px; }
+        .pg-prog {
+            display:flex; align-items:flex-start; gap:14px;
+            padding:16px; border-radius:var(--r); border:1px solid rgba(0,0,0,.07);
+            background:var(--cream); transition:box-shadow .3s,transform .3s var(--ease);
+        }
+        .pg-prog:hover { box-shadow:var(--sh-sm); transform:translateX(4px); }
+        .pg-prog-icon {
+            width:40px; height:40px; border-radius:10px; flex-shrink:0;
+            display:flex; align-items:center; justify-content:center; font-size:.95rem;
+        }
+        .pgi1 { background:rgba(13,110,253,.1); color:var(--blue); }
+        .pgi2 { background:rgba(45,106,79,.1); color:var(--green-mid); }
+        .pgi3 { background:rgba(212,160,23,.12); color:var(--gold); }
+
+        .pg-prog-title { font-size:.88rem; font-weight:700; color:var(--green-deep); margin-bottom:3px; }
+        .pg-prog-sub   { font-size:.76rem; color:var(--muted); }
+
+        /* ══════════════════════════════════════════════════════
+           FOOTER — identical structure to index.html
+        ══════════════════════════════════════════════════════ */
+        footer { background:linear-gradient(160deg,#0a1a10 0%,#1a3d2b 100%); color:rgba(255,255,255,.72); padding:64px 0 0; }
+        .foot-brand { font-family:'Playfair Display',serif; font-size:1.25rem; color:var(--green-light); font-weight:700; margin-bottom:10px; }
+        .foot-desc  { font-size:.84rem; line-height:1.75; margin-bottom:18px; }
+        .foot-social a { display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:8px; border:1px solid rgba(255,255,255,.15); color:rgba(255,255,255,.65); margin-right:8px; text-decoration:none; transition:all .3s; }
+        .foot-social a:hover { background:rgba(255,255,255,.1); color:#fff; border-color:rgba(255,255,255,.35); }
+        .foot-hd { font-family:'Playfair Display',serif; font-size:1.05rem; color:var(--gold-light); margin-bottom:18px; }
+        .foot-links { list-style:none; }
+        .foot-links li { margin-bottom:9px; }
+        .foot-links a { color:rgba(255,255,255,.6); font-size:.84rem; display:flex; align-items:center; gap:6px; text-decoration:none; transition:all .3s; }
+        .foot-links a:hover { color:var(--green-light); padding-left:5px; }
+        .foot-links a::before { content:'→'; font-size:.72rem; opacity:.55; }
+        .foot-ci { display:flex; align-items:flex-start; gap:10px; margin-bottom:12px; }
+        .foot-ci i { color:var(--green-light); width:15px; flex-shrink:0; margin-top:3px; }
+        .foot-ci span { font-size:.83rem; }
+        .foot-bottom { border-top:1px solid rgba(255,255,255,.08); margin-top:48px; padding:20px 0; text-align:center; }
+        .foot-bottom p { font-size:.76rem; color:rgba(255,255,255,.38); margin:0; }
+    </style>
 </head>
 <body data-bs-spy="scroll" data-bs-target="#navbar" data-bs-offset="100">
     
@@ -67,489 +574,559 @@
             </div>
         </div>
     </section>
-
-    <!-- Program Overview -->
-    <section class="py-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8 mx-auto text-center mb-5">
-                    <h2 class="section-title">B.Eng Agricultural and Environmental Engineering</h2>
-                    <div class="title-underline"></div>
-                    <p class="lead">A comprehensive 5-year undergraduate program that integrates engineering principles with agricultural and environmental sciences to address challenges in food production, environmental sustainability, and rural development.</p>
+<!-- ═══════════════════════════════════════════════
+     PROGRAM OVERVIEW
+═══════════════════════════════════════════════ -->
+<section id="overview">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title fu">B.Eng Agricultural &amp; Environmental Engineering</h2>
+            <div class="title-underline"></div>
+            <p class="section-lead fu">A comprehensive 5-year undergraduate program that integrates engineering principles with agricultural and environmental sciences to address challenges in food production, environmental sustainability, and rural development.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6 fu">
+                <div class="ov-card c1">
+                    <div class="ov-icon blue"><i class="fas fa-clock"></i></div>
+                    <div class="ov-title">Duration</div>
+                    <div class="ov-val">5 Years</div>
+                    <div class="ov-desc">10 semesters plus 6 months SIWES industrial training</div>
                 </div>
             </div>
-            
-            <div class="row">
-                <div class="col-lg-4 mb-4">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body text-center">
-                            <i class="fas fa-clock fa-3x text-primary mb-3"></i>
-                            <h5 class="card-title">Duration</h5>
-                            <p class="card-text">5 Years (10 Semesters)<br>Plus 6 months SIWES</p>
-                        </div>
-                    </div>
+            <div class="col-lg-3 col-md-6 fu">
+                <div class="ov-card c2">
+                    <div class="ov-icon green"><i class="fas fa-users"></i></div>
+                    <div class="ov-title">Class Size</div>
+                    <div class="ov-val">Small</div>
+                    <div class="ov-desc">Small class sizes designed for personalized attention and mentorship</div>
                 </div>
-                <div class="col-lg-4 mb-4">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body text-center">
-                            <i class="fas fa-users fa-3x text-success mb-3"></i>
-                            <h5 class="card-title">Class Size</h5>
-                            <p class="card-text">Small class sizes for<br>personalized attention</p>
-                        </div>
-                    </div>
+            </div>
+            <div class="col-lg-3 col-md-6 fu">
+                <div class="ov-card c3">
+                    <div class="ov-icon gold"><i class="fas fa-award"></i></div>
+                    <div class="ov-title">Accreditation</div>
+                    <div class="ov-val">COREN · NUC</div>
+                    <div class="ov-desc">Fully accredited by the Council for Regulation of Engineering in Nigeria</div>
                 </div>
-                <div class="col-lg-4 mb-4">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body text-center">
-                            <i class="fas fa-award fa-3x text-warning mb-3"></i>
-                            <h5 class="card-title">Accreditation</h5>
-                            <p class="card-text">Fully accredited by<br>COREN and NUC</p>
+            </div>
+            <div class="col-lg-3 col-md-6 fu">
+                <div class="ov-card c4">
+                    <div class="ov-icon red"><i class="fas fa-layer-group"></i></div>
+                    <div class="ov-title">Credit Units</div>
+                    <div class="ov-val">180+</div>
+                    <div class="ov-desc">Minimum credit units required for graduation with honours degree</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="wave" style="background:var(--cream);"><svg viewBox="0 0 1440 55" preserveAspectRatio="none" style="width:100%;height:55px;"><path d="M0,55 L0,28 Q360,0 720,28 Q1080,55 1440,28 L1440,55 Z" fill="var(--cream-alt)"/></svg></div>
+
+<!-- ═══════════════════════════════════════════════
+     COURSE STRUCTURE
+═══════════════════════════════════════════════ -->
+<section id="courses">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title fu">Course Structure by Level</h2>
+            <div class="title-underline"></div>
+            <p class="section-lead fu">Detailed breakdown of all courses from 100 Level foundation year through to 500 Level specialization.</p>
+        </div>
+
+        <div class="year-nav fu">
+            <button class="yn-btn active" data-yr="100" onclick="switchYear('100',this)"><span class="yn-dot"></span>100 Level</button>
+            <button class="yn-btn" data-yr="200" onclick="switchYear('200',this)"><span class="yn-dot"></span>200 Level</button>
+            <button class="yn-btn" data-yr="300" onclick="switchYear('300',this)"><span class="yn-dot"></span>300 Level</button>
+            <button class="yn-btn" data-yr="400" onclick="switchYear('400',this)"><span class="yn-dot"></span>400 Level</button>
+            <button class="yn-btn" data-yr="500" onclick="switchYear('500',this)"><span class="yn-dot"></span>500 Level</button>
+        </div>
+
+        <!-- ── 100 LEVEL ── -->
+        <div class="yr-pane active" id="yr100">
+            <div class="course-wrap">
+                <div class="cw-header l100">
+                    <div><div class="cw-title"><i class="fas fa-book me-2"></i>100 Level — Foundation Year</div><div class="cw-sub">Focus: Basic Sciences, Mathematics &amp; Introduction to Engineering</div></div>
+                    <span class="cw-badge">Year 1 of 5</span>
+                </div>
+                <div class="cw-body">
+                    <div class="sem-grid">
+                        <div class="sem-col">
+                            <span class="sem-label first"><i class="fas fa-circle-half-stroke"></i>First Semester</span>
+                            <table class="c-table">
+                                <thead><tr><th>Code</th><th>Course Title</th><th>Units</th></tr></thead>
+                                <tbody>
+                                    <tr><td><span class="c-code blue">MAT 111</span></td><td>Elementary Mathematics I</td><td><span class="c-units cu-blue">3</span></td></tr>
+                                    <tr><td><span class="c-code blue">PHY 101</span></td><td>General Physics I</td><td><span class="c-units cu-blue">3</span></td></tr>
+                                    <tr><td><span class="c-code blue">CHE 101</span></td><td>General Chemistry I</td><td><span class="c-units cu-blue">3</span></td></tr>
+                                    <tr><td><span class="c-code blue">CSC 101</span></td><td>Introduction to Computer Science</td><td><span class="c-units cu-blue">3</span></td></tr>
+                                    <tr><td><span class="c-code blue">TME 111</span></td><td>Engineering Drawing I</td><td><span class="c-units cu-blue">2</span></td></tr>
+                                    <tr><td><span class="c-code blue">GES 101</span></td><td>Use of English I</td><td><span class="c-units cu-blue">2</span></td></tr>
+                                    <tr><td><span class="c-code blue">GES 103</span></td><td>Nigerian People and Culture</td><td><span class="c-units cu-blue">2</span></td></tr>
+                                </tbody>
+                            </table>
+                            <div class="sem-total">Total Credit Units: <strong>18</strong></div>
+                        </div>
+                        <div class="sem-col">
+                            <span class="sem-label second"><i class="fas fa-circle"></i>Second Semester</span>
+                            <table class="c-table">
+                                <thead><tr><th>Code</th><th>Course Title</th><th>Units</th></tr></thead>
+                                <tbody>
+                                    <tr><td><span class="c-code blue">MAT 112</span></td><td>Elementary Mathematics II</td><td><span class="c-units cu-blue">3</span></td></tr>
+                                    <tr><td><span class="c-code blue">PHY 102</span></td><td>General Physics II</td><td><span class="c-units cu-blue">3</span></td></tr>
+                                    <tr><td><span class="c-code blue">CHE 102</span></td><td>General Chemistry II</td><td><span class="c-units cu-blue">3</span></td></tr>
+                                    <tr><td><span class="c-code blue">BIO 101</span></td><td>General Biology</td><td><span class="c-units cu-blue">3</span></td></tr>
+                                    <tr><td><span class="c-code blue">TME 112</span></td><td>Engineering Drawing II</td><td><span class="c-units cu-blue">2</span></td></tr>
+                                    <tr><td><span class="c-code blue">GES 102</span></td><td>Use of English II</td><td><span class="c-units cu-blue">2</span></td></tr>
+                                    <tr><td><span class="c-code blue">GES 104</span></td><td>History and Philosophy of Science</td><td><span class="c-units cu-blue">2</span></td></tr>
+                                </tbody>
+                            </table>
+                            <div class="sem-total">Total Credit Units: <strong>18</strong></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
 
-    <!-- Course Structure by Level -->
-    <section class="py-5 bg-light">
-        <div class="container">
-            <div class="text-center mb-5">
-                <h2 class="section-title">Course Structure by Level</h2>
-                <div class="title-underline"></div>
-                <p class="lead">Detailed breakdown of courses from 100 Level to 500 Level</p>
-            </div>
-
-            <!-- 100 Level -->
-            <div class="row mb-5">
-                <div class="col-lg-12">
-                    <div class="card">
-                        <div class="card-header bg-primary text-white">
-                            <h4 class="mb-0"><i class="fas fa-book me-2"></i>100 Level - Foundation Year</h4>
-                            <small>Focus: Basic Sciences and Mathematics</small>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <h6 class="text-primary mb-3">First Semester</h6>
-                                    <table class="table table-sm table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>Course Code</th>
-                                                <th>Course Title</th>
-                                                <th>Units</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr><td>MAT 111</td><td>Elementary Mathematics I</td><td>3</td></tr>
-                                            <tr><td>PHY 101</td><td>General Physics I</td><td>3</td></tr>
-                                            <tr><td>CHE 101</td><td>General Chemistry I</td><td>3</td></tr>
-                                            <tr><td>CSC 101</td><td>Introduction to Computer Science</td><td>3</td></tr>
-                                            <tr><td>TME 111</td><td>Engineering Drawing I</td><td>2</td></tr>
-                                            <tr><td>GES 101</td><td>Use of English I</td><td>2</td></tr>
-                                            <tr><td>GES 103</td><td>Nigerian People and Culture</td><td>2</td></tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div class="col-md-6">
-                                    <h6 class="text-success mb-3">Second Semester</h6>
-                                    <table class="table table-sm table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>Course Code</th>
-                                                <th>Course Title</th>
-                                                <th>Units</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr><td>MAT 112</td><td>Elementary Mathematics II</td><td>3</td></tr>
-                                            <tr><td>PHY 102</td><td>General Physics II</td><td>3</td></tr>
-                                            <tr><td>CHE 102</td><td>General Chemistry II</td><td>3</td></tr>
-                                            <tr><td>BIO 101</td><td>General Biology</td><td>3</td></tr>
-                                            <tr><td>TME 112</td><td>Engineering Drawing II</td><td>2</td></tr>
-                                            <tr><td>GES 102</td><td>Use of English II</td><td>2</td></tr>
-                                            <tr><td>GES 104</td><td>History and Philosophy of Science</td><td>2</td></tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+        <!-- ── 200 LEVEL ── -->
+        <div class="yr-pane" id="yr200">
+            <div class="course-wrap">
+                <div class="cw-header l200">
+                    <div><div class="cw-title"><i class="fas fa-cogs me-2"></i>200 Level — Engineering Foundation</div><div class="cw-sub">Focus: Basic Engineering Principles and Agricultural Introduction</div></div>
+                    <span class="cw-badge">Year 2 of 5</span>
                 </div>
-            </div>
-
-            <!-- 200 Level -->
-            <div class="row mb-5">
-                <div class="col-lg-12">
-                    <div class="card">
-                        <div class="card-header bg-success text-white">
-                            <h4 class="mb-0"><i class="fas fa-cogs me-2"></i>200 Level - Engineering Foundation</h4>
-                            <small>Focus: Basic Engineering Principles and Agricultural Introduction</small>
+                <div class="cw-body">
+                    <div class="sem-grid">
+                        <div class="sem-col">
+                            <span class="sem-label first"><i class="fas fa-circle-half-stroke"></i>First Semester</span>
+                            <table class="c-table">
+                                <thead><tr><th>Code</th><th>Course Title</th><th>Units</th></tr></thead>
+                                <tbody>
+                                    <tr><td><span class="c-code green">MAT 201</span></td><td>Mathematical Methods I</td><td><span class="c-units cu-green">3</span></td></tr>
+                                    <tr><td><span class="c-code green">PHY 201</span></td><td>Elementary Modern Physics</td><td><span class="c-units cu-green">3</span></td></tr>
+                                    <tr><td><span class="c-code green">TME 201</span></td><td>Applied Mechanics I</td><td><span class="c-units cu-green">3</span></td></tr>
+                                    <tr><td><span class="c-code green">TME 203</span></td><td>Strength of Materials I</td><td><span class="c-units cu-green">3</span></td></tr>
+                                    <tr><td><span class="c-code green">TAE 211</span></td><td>Introduction to Agricultural Engineering</td><td><span class="c-units cu-green">2</span></td></tr>
+                                    <tr><td><span class="c-code green">STA 204</span></td><td>Statistics for Engineers</td><td><span class="c-units cu-green">3</span></td></tr>
+                                    <tr><td><span class="c-code green">ECE 201</span></td><td>Electrical Circuit Theory I</td><td><span class="c-units cu-green">3</span></td></tr>
+                                </tbody>
+                            </table>
+                            <div class="sem-total">Total Credit Units: <strong>20</strong></div>
                         </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <h6 class="text-primary mb-3">First Semester</h6>
-                                    <table class="table table-sm table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>Course Code</th>
-                                                <th>Course Title</th>
-                                                <th>Units</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr><td>MAT 201</td><td>Mathematical Methods I</td><td>3</td></tr>
-                                            <tr><td>PHY 201</td><td>Elementary Modern Physics</td><td>3</td></tr>
-                                            <tr><td>TME 201</td><td>Applied Mechanics I</td><td>3</td></tr>
-                                            <tr><td>TME 203</td><td>Strength of Materials I</td><td>3</td></tr>
-                                            <tr><td>TAE 211</td><td>Introduction to Agricultural Engineering</td><td>2</td></tr>
-                                            <tr><td>STA 204</td><td>Statistics for Engineers</td><td>3</td></tr>
-                                            <tr><td>ECE 201</td><td>Electrical Circuit Theory I</td><td>3</td></tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div class="col-md-6">
-                                    <h6 class="text-success mb-3">Second Semester</h6>
-                                    <table class="table table-sm table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>Course Code</th>
-                                                <th>Course Title</th>
-                                                <th>Units</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr><td>MAT 202</td><td>Mathematical Methods II</td><td>3</td></tr>
-                                            <tr><td>TME 202</td><td>Applied Mechanics II</td><td>3</td></tr>
-                                            <tr><td>TME 204</td><td>Strength of Materials II</td><td>3</td></tr>
-                                            <tr><td>TAE 202</td><td>Workshop Technology and Practice</td><td>2</td></tr>
-                                            <tr><td>TAE 212</td><td>Principles of Farm Mechanization</td><td>3</td></tr>
-                                            <tr><td>AGR 201</td><td>Introduction to Crop Production</td><td>2</td></tr>
-                                            <tr><td>ECE 202</td><td>Electrical Circuit Theory II</td><td>3</td></tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 300 Level -->
-            <div class="row mb-5">
-                <div class="col-lg-12">
-                    <div class="card">
-                        <div class="card-header bg-info text-white">
-                            <h4 class="mb-0"><i class="fas fa-tools me-2"></i>300 Level - Core Engineering</h4>
-                            <small>Focus: Agricultural Engineering Fundamentals</small>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <h6 class="text-primary mb-3">First Semester</h6>
-                                    <table class="table table-sm table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>Course Code</th>
-                                                <th>Course Title</th>
-                                                <th>Units</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr><td>TAE 301</td><td>Fluid Mechanics</td><td>3</td></tr>
-                                            <tr><td>TAE 303</td><td>Thermodynamics</td><td>3</td></tr>
-                                            <tr><td>TAE 305</td><td>Soil Mechanics</td><td>3</td></tr>
-                                            <tr><td>TAE 307</td><td>Agricultural Machinery I</td><td>3</td></tr>
-                                            <tr><td>TAE 309</td><td>Farm Structures I</td><td>3</td></tr>
-                                            <tr><td>TAE 311</td><td>Agricultural Processing I</td><td>3</td></tr>
-                                            <tr><td>ECE 301</td><td>Electronics</td><td>3</td></tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div class="col-md-6">
-                                    <h6 class="text-success mb-3">Second Semester</h6>
-                                    <table class="table table-sm table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>Course Code</th>
-                                                <th>Course Title</th>
-                                                <th>Units</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr><td>TAE 302</td><td>Heat and Mass Transfer</td><td>3</td></tr>
-                                            <tr><td>TAE 304</td><td>Soil and Water Conservation I</td><td>3</td></tr>
-                                            <tr><td>TAE 306</td><td>Agricultural Materials</td><td>2</td></tr>
-                                            <tr><td>TAE 308</td><td>Agricultural Machinery II</td><td>3</td></tr>
-                                            <tr><td>TAE 310</td><td>Farm Structures II</td><td>3</td></tr>
-                                            <tr><td>TAE 312</td><td>Agricultural Processing II</td><td>3</td></tr>
-                                            <tr><td>GES 301</td><td>Engineering Economics</td><td>2</td></tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 400 Level -->
-            <div class="row mb-5">
-                <div class="col-lg-12">
-                    <div class="card">
-                        <div class="card-header bg-warning text-dark">
-                            <h4 class="mb-0"><i class="fas fa-industry me-2"></i>400 Level - Advanced Applications</h4>
-                            <small>Focus: Specialized Systems and Industrial Training</small>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <h6 class="text-primary mb-3">First Semester</h6>
-                                    <table class="table table-sm table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>Course Code</th>
-                                                <th>Course Title</th>
-                                                <th>Units</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr><td>TAE 401</td><td>Instrumentation and Control</td><td>3</td></tr>
-                                            <tr><td>TAE 403</td><td>Irrigation Engineering</td><td>3</td></tr>
-                                            <tr><td>TAE 405</td><td>Environmental Engineering I</td><td>3</td></tr>
-                                            <tr><td>TAE 407</td><td>Power and Energy in Agriculture</td><td>3</td></tr>
-                                            <tr><td>TAE 409</td><td>Food Process Engineering I</td><td>3</td></tr>
-                                            <tr><td>TAE 411</td><td>Research Methods in Engineering</td><td>2</td></tr>
-                                            <tr><td>ENT 401</td><td>Entrepreneurship Studies</td><td>2</td></tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div class="col-md-6">
-                                    <h6 class="text-success mb-3">Second Semester</h6>
-                                    <table class="table table-sm table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>Course Code</th>
-                                                <th>Course Title</th>
-                                                <th>Units</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr><td>TAE 402</td><td>Drainage Engineering</td><td>3</td></tr>
-                                            <tr><td>TAE 404</td><td>Environmental Engineering II</td><td>3</td></tr>
-                                            <tr><td>TAE 406</td><td>Precision Agriculture</td><td>3</td></tr>
-                                            <tr><td>TAE 408</td><td>Food Process Engineering II</td><td>3</td></tr>
-                                            <tr><td>TAE 410</td><td>Project I</td><td>3</td></tr>
-                                            <tr><td>TAE 412</td><td>SIWES (Students Industrial Work Experience)</td><td>6</td></tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 500 Level -->
-            <div class="row mb-5">
-                <div class="col-lg-12">
-                    <div class="card">
-                        <div class="card-header bg-danger text-white">
-                            <h4 class="mb-0"><i class="fas fa-graduation-cap me-2"></i>500 Level - Specialization & Project</h4>
-                            <small>Focus: Advanced Topics and Final Year Project</small>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <h6 class="text-primary mb-3">First Semester</h6>
-                                    <table class="table table-sm table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>Course Code</th>
-                                                <th>Course Title</th>
-                                                <th>Units</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr><td>TAE 501</td><td>Advanced Agricultural Machinery</td><td>3</td></tr>
-                                            <tr><td>TAE 503</td><td>Renewable Energy Systems</td><td>3</td></tr>
-                                            <tr><td>TAE 505</td><td>Post-Harvest Technology</td><td>3</td></tr>
-                                            <tr><td>TAE 507</td><td>Agricultural Robotics</td><td>3</td></tr>
-                                            <tr><td>TAE 509</td><td>Environmental Impact Assessment</td><td>3</td></tr>
-                                            <tr><td>TAE 511</td><td>Project II</td><td>6</td></tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div class="col-md-6">
-                                    <h6 class="text-success mb-3">Second Semester</h6>
-                                    <table class="table table-sm table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>Course Code</th>
-                                                <th>Course Title</th>
-                                                <th>Units</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr><td>TAE 502</td><td>Agricultural Systems Engineering</td><td>3</td></tr>
-                                            <tr><td>TAE 504</td><td>Smart Farming Technologies</td><td>3</td></tr>
-                                            <tr><td>TAE 506</td><td>Sustainable Agriculture</td><td>3</td></tr>
-                                            <tr><td>TAE 508</td><td>Professional Engineering Practice</td><td>2</td></tr>
-                                            <tr><td>TAE 510</td><td>Seminar</td><td>1</td></tr>
-                                            <tr><td>TAE 512</td><td>Project III (Final Project)</td><td>6</td></tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
+                        <div class="sem-col">
+                            <span class="sem-label second"><i class="fas fa-circle"></i>Second Semester</span>
+                            <table class="c-table">
+                                <thead><tr><th>Code</th><th>Course Title</th><th>Units</th></tr></thead>
+                                <tbody>
+                                    <tr><td><span class="c-code green">MAT 202</span></td><td>Mathematical Methods II</td><td><span class="c-units cu-green">3</span></td></tr>
+                                    <tr><td><span class="c-code green">TME 202</span></td><td>Applied Mechanics II</td><td><span class="c-units cu-green">3</span></td></tr>
+                                    <tr><td><span class="c-code green">TME 204</span></td><td>Strength of Materials II</td><td><span class="c-units cu-green">3</span></td></tr>
+                                    <tr><td><span class="c-code green">TAE 202</span></td><td>Workshop Technology and Practice</td><td><span class="c-units cu-green">2</span></td></tr>
+                                    <tr><td><span class="c-code green">TAE 212</span></td><td>Principles of Farm Mechanization</td><td><span class="c-units cu-green">3</span></td></tr>
+                                    <tr><td><span class="c-code green">AGR 201</span></td><td>Introduction to Crop Production</td><td><span class="c-units cu-green">2</span></td></tr>
+                                    <tr><td><span class="c-code green">ECE 202</span></td><td>Electrical Circuit Theory II</td><td><span class="c-units cu-green">3</span></td></tr>
+                                </tbody>
+                            </table>
+                            <div class="sem-total">Total Credit Units: <strong>19</strong></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
 
-    <!-- Graduation Requirements -->
-    <section class="py-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8 mx-auto">
-                    <div class="card">
-                        <div class="card-header bg-primary text-white">
-                            <h4 class="mb-0"><i class="fas fa-certificate me-2"></i>Graduation Requirements</h4>
+        <!-- ── 300 LEVEL ── -->
+        <div class="yr-pane" id="yr300">
+            <div class="course-wrap">
+                <div class="cw-header l300">
+                    <div><div class="cw-title"><i class="fas fa-tools me-2"></i>300 Level — Core Engineering</div><div class="cw-sub">Focus: Agricultural Engineering Fundamentals and Applied Systems</div></div>
+                    <span class="cw-badge">Year 3 of 5</span>
+                </div>
+                <div class="cw-body">
+                    <div class="sem-grid">
+                        <div class="sem-col">
+                            <span class="sem-label first"><i class="fas fa-circle-half-stroke"></i>First Semester</span>
+                            <table class="c-table">
+                                <thead><tr><th>Code</th><th>Course Title</th><th>Units</th></tr></thead>
+                                <tbody>
+                                    <tr><td><span class="c-code teal">TAE 301</span></td><td>Fluid Mechanics</td><td><span class="c-units cu-teal">3</span></td></tr>
+                                    <tr><td><span class="c-code teal">TAE 303</span></td><td>Thermodynamics</td><td><span class="c-units cu-teal">3</span></td></tr>
+                                    <tr><td><span class="c-code teal">TAE 305</span></td><td>Soil Mechanics</td><td><span class="c-units cu-teal">3</span></td></tr>
+                                    <tr><td><span class="c-code teal">TAE 307</span></td><td>Agricultural Machinery I</td><td><span class="c-units cu-teal">3</span></td></tr>
+                                    <tr><td><span class="c-code teal">TAE 309</span></td><td>Farm Structures I</td><td><span class="c-units cu-teal">3</span></td></tr>
+                                    <tr><td><span class="c-code teal">TAE 311</span></td><td>Agricultural Processing I</td><td><span class="c-units cu-teal">3</span></td></tr>
+                                    <tr><td><span class="c-code teal">ECE 301</span></td><td>Electronics</td><td><span class="c-units cu-teal">3</span></td></tr>
+                                </tbody>
+                            </table>
+                            <div class="sem-total">Total Credit Units: <strong>21</strong></div>
                         </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <h6 class="text-primary mb-3">Academic Requirements</h6>
-                                    <ul class="list-group list-group-flush">
-                                        <li class="list-group-item">Minimum of 180 credit units</li>
-                                        <li class="list-group-item">Minimum CGPA of 1.50</li>
-                                        <li class="list-group-item">Successful completion of SIWES</li>
-                                        <li class="list-group-item">Satisfactory final year project</li>
-                                        <li class="list-group-item">No outstanding fees</li>
-                                    </ul>
-                                </div>
-                                <div class="col-md-6">
-                                    <h6 class="text-success mb-3">Professional Development</h6>
-                                    <ul class="list-group list-group-flush">
-                                        <li class="list-group-item">Eligible for COREN registration</li>
-                                        <li class="list-group-item">Industry internship experience</li>
-                                        <li class="list-group-item">Research presentation skills</li>
-                                        <li class="list-group-item">Technical report writing</li>
-                                        <li class="list-group-item">Teamwork and leadership</li>
-                                    </ul>
-                                </div>
-                            </div>
+                        <div class="sem-col">
+                            <span class="sem-label second"><i class="fas fa-circle"></i>Second Semester</span>
+                            <table class="c-table">
+                                <thead><tr><th>Code</th><th>Course Title</th><th>Units</th></tr></thead>
+                                <tbody>
+                                    <tr><td><span class="c-code teal">TAE 302</span></td><td>Heat and Mass Transfer</td><td><span class="c-units cu-teal">3</span></td></tr>
+                                    <tr><td><span class="c-code teal">TAE 304</span></td><td>Soil and Water Conservation I</td><td><span class="c-units cu-teal">3</span></td></tr>
+                                    <tr><td><span class="c-code teal">TAE 306</span></td><td>Agricultural Materials</td><td><span class="c-units cu-teal">2</span></td></tr>
+                                    <tr><td><span class="c-code teal">TAE 308</span></td><td>Agricultural Machinery II</td><td><span class="c-units cu-teal">3</span></td></tr>
+                                    <tr><td><span class="c-code teal">TAE 310</span></td><td>Farm Structures II</td><td><span class="c-units cu-teal">3</span></td></tr>
+                                    <tr><td><span class="c-code teal">TAE 312</span></td><td>Agricultural Processing II</td><td><span class="c-units cu-teal">3</span></td></tr>
+                                    <tr><td><span class="c-code teal">GES 301</span></td><td>Engineering Economics</td><td><span class="c-units cu-teal">2</span></td></tr>
+                                </tbody>
+                            </table>
+                            <div class="sem-total">Total Credit Units: <strong>19</strong></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
 
-    <!-- Career Prospects -->
-    <section class="py-5 bg-light">
-        <div class="container">
-            <div class="text-center mb-5">
-                <h2 class="section-title">Career Prospects</h2>
-                <div class="title-underline"></div>
-                <p class="lead">Our graduates pursue diverse career paths in various sectors</p>
-            </div>
-            <div class="row">
-                <div class="col-lg-4 mb-4">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body text-center">
-                            <i class="fas fa-industry fa-3x text-primary mb-3"></i>
-                            <h5 class="card-title">Engineering Consulting</h5>
-                            <p class="card-text">Design and consultation services for agricultural systems, irrigation projects, and environmental solutions.</p>
-                        </div>
-                    </div>
+        <!-- ── 400 LEVEL ── -->
+        <div class="yr-pane" id="yr400">
+            <div class="course-wrap">
+                <div class="cw-header l400">
+                    <div><div class="cw-title"><i class="fas fa-industry me-2"></i>400 Level — Advanced Applications</div><div class="cw-sub">Focus: Specialized Systems, Industrial Training &amp; Applied Research</div></div>
+                    <span class="cw-badge dark">Year 4 of 5</span>
                 </div>
-                <div class="col-lg-4 mb-4">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body text-center">
-                            <i class="fas fa-seedling fa-3x text-success mb-3"></i>
-                            <h5 class="card-title">Agricultural Technology</h5>
-                            <p class="card-text">Development of smart farming solutions, precision agriculture systems, and agricultural machinery.</p>
+                <div class="cw-body">
+                    <div class="sem-grid">
+                        <div class="sem-col">
+                            <span class="sem-label first"><i class="fas fa-circle-half-stroke"></i>First Semester</span>
+                            <table class="c-table">
+                                <thead><tr><th>Code</th><th>Course Title</th><th>Units</th></tr></thead>
+                                <tbody>
+                                    <tr><td><span class="c-code gold">TAE 401</span></td><td>Instrumentation and Control</td><td><span class="c-units cu-gold">3</span></td></tr>
+                                    <tr><td><span class="c-code gold">TAE 403</span></td><td>Irrigation Engineering</td><td><span class="c-units cu-gold">3</span></td></tr>
+                                    <tr><td><span class="c-code gold">TAE 405</span></td><td>Environmental Engineering I</td><td><span class="c-units cu-gold">3</span></td></tr>
+                                    <tr><td><span class="c-code gold">TAE 407</span></td><td>Power and Energy in Agriculture</td><td><span class="c-units cu-gold">3</span></td></tr>
+                                    <tr><td><span class="c-code gold">TAE 409</span></td><td>Food Process Engineering I</td><td><span class="c-units cu-gold">3</span></td></tr>
+                                    <tr><td><span class="c-code gold">TAE 411</span></td><td>Research Methods in Engineering</td><td><span class="c-units cu-gold">2</span></td></tr>
+                                    <tr><td><span class="c-code gold">ENT 401</span></td><td>Entrepreneurship Studies</td><td><span class="c-units cu-gold">2</span></td></tr>
+                                </tbody>
+                            </table>
+                            <div class="sem-total">Total Credit Units: <strong>19</strong></div>
                         </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 mb-4">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body text-center">
-                            <i class="fas fa-leaf fa-3x text-info mb-3"></i>
-                            <h5 class="card-title">Environmental Engineering</h5>
-                            <p class="card-text">Environmental impact assessment, waste management, and sustainable development projects.</p>
+                        <div class="sem-col">
+                            <span class="sem-label second"><i class="fas fa-circle"></i>Second Semester</span>
+                            <table class="c-table">
+                                <thead><tr><th>Code</th><th>Course Title</th><th>Units</th></tr></thead>
+                                <tbody>
+                                    <tr><td><span class="c-code gold">TAE 402</span></td><td>Drainage Engineering</td><td><span class="c-units cu-gold">3</span></td></tr>
+                                    <tr><td><span class="c-code gold">TAE 404</span></td><td>Environmental Engineering II</td><td><span class="c-units cu-gold">3</span></td></tr>
+                                    <tr><td><span class="c-code gold">TAE 406</span></td><td>Precision Agriculture</td><td><span class="c-units cu-gold">3</span></td></tr>
+                                    <tr><td><span class="c-code gold">TAE 408</span></td><td>Food Process Engineering II</td><td><span class="c-units cu-gold">3</span></td></tr>
+                                    <tr><td><span class="c-code gold">TAE 410</span></td><td>Project I</td><td><span class="c-units cu-gold">3</span></td></tr>
+                                    <tr><td><span class="c-code gold">TAE 412</span></td><td>SIWES (Industrial Work Experience)</td><td><span class="c-units cu-gold">6</span></td></tr>
+                                </tbody>
+                            </table>
+                            <div class="sem-total">Total Credit Units: <strong>21</strong></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
 
-    <!-- Footer -->
-    <footer class="bg-dark text-white py-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-4 mb-4">
-                    <h5 class="text-success mb-3">Agricultural & Environmental Engineering</h5>
-                    <p class="small">Pioneering sustainable solutions for agriculture and environment through innovative engineering practices at the University of Ibadan.</p>
-                    <div class="social-links">
-                        <a href="#" class="text-white me-3"><i class="fab fa-facebook-f fa-lg"></i></a>
-                        <a href="#" class="text-white me-3"><i class="fab fa-twitter fa-lg"></i></a>
-                        <a href="#" class="text-white me-3"><i class="fab fa-linkedin-in fa-lg"></i></a>
-                        <a href="#" class="text-white"><i class="fab fa-instagram fa-lg"></i></a>
+        <!-- ── 500 LEVEL ── -->
+        <div class="yr-pane" id="yr500">
+            <div class="course-wrap">
+                <div class="cw-header l500">
+                    <div><div class="cw-title"><i class="fas fa-graduation-cap me-2"></i>500 Level — Specialization &amp; Project</div><div class="cw-sub">Focus: Advanced Topics, Final Year Research Project &amp; Professional Practice</div></div>
+                    <span class="cw-badge">Year 5 of 5</span>
+                </div>
+                <div class="cw-body">
+                    <div class="sem-grid">
+                        <div class="sem-col">
+                            <span class="sem-label first"><i class="fas fa-circle-half-stroke"></i>First Semester</span>
+                            <table class="c-table">
+                                <thead><tr><th>Code</th><th>Course Title</th><th>Units</th></tr></thead>
+                                <tbody>
+                                    <tr><td><span class="c-code red">TAE 501</span></td><td>Advanced Agricultural Machinery</td><td><span class="c-units cu-red">3</span></td></tr>
+                                    <tr><td><span class="c-code red">TAE 503</span></td><td>Renewable Energy Systems</td><td><span class="c-units cu-red">3</span></td></tr>
+                                    <tr><td><span class="c-code red">TAE 505</span></td><td>Post-Harvest Technology</td><td><span class="c-units cu-red">3</span></td></tr>
+                                    <tr><td><span class="c-code red">TAE 507</span></td><td>Agricultural Robotics</td><td><span class="c-units cu-red">3</span></td></tr>
+                                    <tr><td><span class="c-code red">TAE 509</span></td><td>Environmental Impact Assessment</td><td><span class="c-units cu-red">3</span></td></tr>
+                                    <tr><td><span class="c-code red">TAE 511</span></td><td>Project II</td><td><span class="c-units cu-red">6</span></td></tr>
+                                </tbody>
+                            </table>
+                            <div class="sem-total">Total Credit Units: <strong>21</strong></div>
+                        </div>
+                        <div class="sem-col">
+                            <span class="sem-label second"><i class="fas fa-circle"></i>Second Semester</span>
+                            <table class="c-table">
+                                <thead><tr><th>Code</th><th>Course Title</th><th>Units</th></tr></thead>
+                                <tbody>
+                                    <tr><td><span class="c-code red">TAE 502</span></td><td>Agricultural Systems Engineering</td><td><span class="c-units cu-red">3</span></td></tr>
+                                    <tr><td><span class="c-code red">TAE 504</span></td><td>Smart Farming Technologies</td><td><span class="c-units cu-red">3</span></td></tr>
+                                    <tr><td><span class="c-code red">TAE 506</span></td><td>Sustainable Agriculture</td><td><span class="c-units cu-red">3</span></td></tr>
+                                    <tr><td><span class="c-code red">TAE 508</span></td><td>Professional Engineering Practice</td><td><span class="c-units cu-red">2</span></td></tr>
+                                    <tr><td><span class="c-code red">TAE 510</span></td><td>Seminar</td><td><span class="c-units cu-red">1</span></td></tr>
+                                    <tr><td><span class="c-code red">TAE 512</span></td><td>Project III (Final Project)</td><td><span class="c-units cu-red">6</span></td></tr>
+                                </tbody>
+                            </table>
+                            <div class="sem-total">Total Credit Units: <strong>18</strong></div>
+                        </div>
                     </div>
                 </div>
-                <div class="col-lg-2 mb-4">
-                    <h6 class="text-success mb-3">Quick Links</h6>
-                    <ul class="list-unstyled small">
-                        <li><a href="{{ url_for('index') }}" class="text-light text-decoration-none">Home</a></li>
-                        <li><a href="{{ url_for('staff') }}" class="text-light text-decoration-none">Faculty</a></li>
-                        <li><a href="{{ url_for('academic_program') }}" class="text-light text-decoration-none">Programs</a></li>
-                        <li><a href="{{ url_for('students') }}" class="text-light text-decoration-none">Students</a></li>
-                        <li><a href="{{ url_for('index') }}#contact" class="text-light text-decoration-none">Contact</a></li>
-                    </ul>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<div class="wave" style="background:linear-gradient(160deg,var(--cream-alt),var(--cream-dark));"><svg viewBox="0 0 1440 55" preserveAspectRatio="none" style="width:100%;height:55px;"><path d="M0,0 Q720,55 1440,0 L1440,55 L0,55 Z" fill="var(--cream)"/></svg></div>
+
+<!-- ═══════════════════════════════════════════════
+     GRADUATION REQUIREMENTS
+═══════════════════════════════════════════════ -->
+<section id="graduation">
+    <div class="dot-bg" style="opacity:.04;"></div>
+    <div class="container position-relative">
+        <div class="text-center mb-5">
+            <h2 class="section-title fu">Graduation Requirements</h2>
+            <div class="title-underline"></div>
+            <p class="section-lead fu">Academic and professional standards that must be met to earn the B.Eng degree.</p>
+        </div>
+
+        <div class="grad-wrap fu">
+            <div class="grad-hd">
+                <div class="g-icon"><i class="fas fa-certificate"></i></div>
+                <div>
+                    <h4>B.Eng Agricultural &amp; Environmental Engineering — Graduation Standards</h4>
+                    <p>University of Ibadan · Faculty of Technology · 2024/2025 Session</p>
                 </div>
-                <div class="col-lg-3 mb-4">
-                    <h6 class="text-success mb-3">Academic Programs</h6>
-                    <ul class="list-unstyled small">
-                        <li>B.Eng Agricultural & Environmental Engineering</li>
-                        <li>M.Eng Agricultural & Environmental Engineering</li>
-                        <li>Ph.D Agricultural & Environmental Engineering</li>
-                        <li>Postgraduate Diploma Programs</li>
-                    </ul>
+            </div>
+            <div class="grad-body">
+                <div class="req-grid">
+                    <div class="req-card">
+                        <div class="req-card-hd">
+                            <div class="rh-icon blue"><i class="fas fa-book-open"></i></div>
+                            <h6>Academic Requirements</h6>
+                        </div>
+                        <ul class="req-list">
+                            <li>Minimum of 180 credit units completed</li>
+                            <li>Minimum CGPA of 1.50 on a 5.0 scale</li>
+                            <li>Successful completion of SIWES (6 months)</li>
+                            <li>Satisfactory final year project defense</li>
+                            <li>No outstanding financial obligations</li>
+                            <li>Cleared by all relevant departments</li>
+                        </ul>
+                    </div>
+                    <div class="req-card">
+                        <div class="req-card-hd">
+                            <div class="rh-icon green"><i class="fas fa-briefcase"></i></div>
+                            <h6>Professional Development</h6>
+                        </div>
+                        <ul class="req-list">
+                            <li>Eligible for COREN graduate registration</li>
+                            <li>Verified industry internship experience</li>
+                            <li>Demonstrated research presentation skills</li>
+                            <li>Technical report writing proficiency</li>
+                            <li>Teamwork and engineering leadership</li>
+                            <li>Adherence to engineering ethics code</li>
+                        </ul>
+                    </div>
                 </div>
-                <div class="col-lg-3 mb-4">
-                    <h6 class="text-success mb-3">Contact Info</h6>
-                    <p class="small mb-1">
-                        <i class="fas fa-map-marker-alt me-2"></i>
-                        Faculty of Technology, University of Ibadan
+
+                <!-- Class distribution visual -->
+                <div class="mt-4 pt-3" style="border-top:1px dashed rgba(0,0,0,.08);">
+                    <p style="font-size:.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:18px;">
+                        <i class="fas fa-award me-2" style="color:var(--green-accent);"></i>Degree Classification by CGPA
                     </p>
-                    <p class="small mb-1">
-                        <i class="fas fa-phone me-2"></i>
-                        +234-xxx-xxx-xxxx
-                    </p>
-                    <p class="small mb-1">
-                        <i class="fas fa-envelope me-2"></i>
-                        info.agric@ui.edu.ng
-                    </p>
-                </div>
-            </div>
-            <hr class="my-4">
-            <div class="row">
-                <div class="col-lg-12 text-center">
-                    <p class="small mb-0">
-                        &copy; 2025 Department of Agricultural and Environmental Engineering, University of Ibadan. 
-                        All rights reserved. | Designed with excellence for academic distinction.
-                    </p>
+                    <div class="class-dist">
+                        <div class="cd-item"><div class="cd-ring first">5.0<br><span style="font-size:.5rem;">–4.5</span></div><div class="cd-label">First Class<br>Honours</div></div>
+                        <div class="cd-item"><div class="cd-ring second">4.4<br><span style="font-size:.5rem;">–3.5</span></div><div class="cd-label">2nd Class<br>Upper</div></div>
+                        <div class="cd-item"><div class="cd-ring third">3.4<br><span style="font-size:.5rem;">–2.5</span></div><div class="cd-label">2nd Class<br>Lower</div></div>
+                        <div class="cd-item"><div class="cd-ring fourth">2.4<br><span style="font-size:.5rem;">–1.5</span></div><div class="cd-label">Third Class<br>Honours</div></div>
+                        <div class="cd-item"><div class="cd-ring fifth">1.4<br><span style="font-size:.5rem;">–1.0</span></div><div class="cd-label">Pass<br>Degree</div></div>
+                    </div>
                 </div>
             </div>
         </div>
-    </footer>
+    </div>
+</section>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<div class="wave" style="background:var(--cream);"><svg viewBox="0 0 1440 55" preserveAspectRatio="none" style="width:100%;height:55px;"><path d="M0,55 L0,28 Q360,0 720,28 Q1080,55 1440,28 L1440,55 Z" fill="var(--cream-alt)"/></svg></div>
+
+<!-- ═══════════════════════════════════════════════
+     CAREER PROSPECTS
+═══════════════════════════════════════════════ -->
+<section id="careers">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title fu">Career Prospects</h2>
+            <div class="title-underline"></div>
+            <p class="section-lead fu">Our graduates pursue diverse and impactful career paths across multiple sectors of the economy.</p>
+        </div>
+
+        <div class="career-grid">
+            <div class="career-card cc1 fu">
+                <div class="career-icon ci1"><i class="fas fa-industry"></i></div>
+                <div class="career-title">Engineering Consulting</div>
+                <div class="career-desc">Design and consultation services for agricultural systems, irrigation projects, and environmental solutions for public and private clients.</div>
+            </div>
+            <div class="career-card cc2 fu">
+                <div class="career-icon ci2"><i class="fas fa-seedling"></i></div>
+                <div class="career-title">Agricultural Technology</div>
+                <div class="career-desc">Development of smart farming solutions, precision agriculture systems, and innovative agricultural machinery for modern food production.</div>
+            </div>
+            <div class="career-card cc3 fu">
+                <div class="career-icon ci3"><i class="fas fa-leaf"></i></div>
+                <div class="career-title">Environmental Engineering</div>
+                <div class="career-desc">Environmental impact assessment, waste management systems, water quality management, and sustainable development project planning.</div>
+            </div>
+            <div class="career-card cc4 fu">
+                <div class="career-icon ci4"><i class="fas fa-solar-panel"></i></div>
+                <div class="career-title">Renewable Energy</div>
+                <div class="career-desc">Bioenergy, solar-powered irrigation, and renewable energy systems tailored to the agricultural and rural development sector.</div>
+            </div>
+            <div class="career-card cc5 fu">
+                <div class="career-icon ci5"><i class="fas fa-flask"></i></div>
+                <div class="career-title">Research &amp; Academia</div>
+                <div class="career-desc">Academic research, teaching at universities, and leading R&amp;D initiatives in agricultural engineering and environmental science institutions.</div>
+            </div>
+            <div class="career-card cc6 fu">
+                <div class="career-icon ci6"><i class="fas fa-landmark"></i></div>
+                <div class="career-title">Government &amp; Policy</div>
+                <div class="career-desc">Technical roles in government ministries, agricultural development programs (ADPs), and international development organizations like FAO and IITA.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="wave" style="background:linear-gradient(160deg,var(--cream-alt),var(--cream-dark));"><svg viewBox="0 0 1440 55" preserveAspectRatio="none" style="width:100%;height:55px;"><path d="M0,0 Q720,55 1440,0 L1440,55 L0,55 Z" fill="var(--cream)"/></svg></div>
+
+<!-- ═══════════════════════════════════════════════
+     POSTGRADUATE PROGRAMS
+═══════════════════════════════════════════════ -->
+<section id="postgrad">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title fu">Postgraduate Programs</h2>
+            <div class="title-underline"></div>
+            <p class="section-lead fu">Continue your academic journey with our advanced postgraduate degrees in Agricultural and Environmental Engineering.</p>
+        </div>
+
+        <div class="pg-wrap fu">
+            <div class="pg-left">
+                <h3>Advance Your Engineering Career</h3>
+                <p>Our postgraduate programs are designed for practicing engineers and recent graduates who want to deepen their expertise, conduct high-impact research, and contribute to solving Africa's most pressing agricultural and environmental challenges.</p>
+                <div class="pg-badge-row">
+                    <span class="pg-badge">Full-time &amp; Part-time</span>
+                    <span class="pg-badge">Research-focused</span>
+                    <span class="pg-badge">Industry-linked</span>
+                    <span class="pg-badge">Internationally Recognized</span>
+                </div>
+                <a href="{{ url_for('index') }}#contact" class="pg-cta"><i class="fas fa-envelope"></i>Enquire About Admissions</a>
+            </div>
+            <div class="pg-right">
+                <h5><i class="fas fa-graduation-cap me-2" style="color:var(--green-accent);"></i>Available Postgraduate Degrees</h5>
+                <div class="pg-prog-list">
+                    <div class="pg-prog">
+                        <div class="pg-prog-icon pgi1"><i class="fas fa-university"></i></div>
+                        <div>
+                            <div class="pg-prog-title">Master of Engineering (M.Eng)</div>
+                            <div class="pg-prog-sub">Agricultural &amp; Environmental Engineering &nbsp;·&nbsp; 18–24 months &nbsp;·&nbsp; Coursework + Thesis</div>
+                        </div>
+                    </div>
+                    <div class="pg-prog">
+                        <div class="pg-prog-icon pgi2"><i class="fas fa-microscope"></i></div>
+                        <div>
+                            <div class="pg-prog-title">Doctor of Philosophy (Ph.D)</div>
+                            <div class="pg-prog-sub">Agricultural &amp; Environmental Engineering &nbsp;·&nbsp; 3–5 years &nbsp;·&nbsp; Original Research</div>
+                        </div>
+                    </div>
+                    <div class="pg-prog">
+                        <div class="pg-prog-icon pgi3"><i class="fas fa-certificate"></i></div>
+                        <div>
+                            <div class="pg-prog-title">Postgraduate Diploma (PGD)</div>
+                            <div class="pg-prog-sub">Agricultural &amp; Environmental Engineering &nbsp;·&nbsp; 12 months &nbsp;·&nbsp; Coursework</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     FOOTER — matches index.html exactly
+═══════════════════════════════════════════════ -->
+<footer>
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="foot-brand">Agricultural &amp; Environmental Engineering</div>
+                <p class="foot-desc">Pioneering sustainable solutions for agriculture and environment through innovative engineering practices at the University of Ibadan since 1972.</p>
+                <div class="foot-social">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-6">
+                <div class="foot-hd">Quick Links</div>
+                <ul class="foot-links">
+                    <li><a href="{{ url_for('index') }}">Home</a></li>
+                    <li><a href="{{ url_for('staff') }}">Faculty</a></li>
+                    <li><a href="{{ url_for('academic_program') }}">Programs</a></li>
+                    <li><a href="{{ url_for('students') }}">Students</a></li>
+                    <li><a href="{{ url_for('index') }}#contact">Contact</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="foot-hd">Academic Programs</div>
+                <ul class="foot-links">
+                    <li><a href="#">B.Eng Agricultural &amp; Env. Engineering</a></li>
+                    <li><a href="#">M.Eng Agricultural &amp; Env. Engineering</a></li>
+                    <li><a href="#">Ph.D Agricultural &amp; Env. Engineering</a></li>
+                    <li><a href="#">Postgraduate Diploma</a></li>
+                    <li><a href="{{ url_for('payment') }}">Payment Portal</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="foot-hd">Contact Info</div>
+                <div class="foot-ci"><i class="fas fa-map-marker-alt"></i><span>Faculty of Technology, University of Ibadan, Ibadan, Oyo State, Nigeria</span></div>
+                <div class="foot-ci"><i class="fas fa-phone-alt"></i><span>+234-903-576-2341</span></div>
+                <div class="foot-ci"><i class="fas fa-envelope"></i><span>info.agric@ui.edu.ng</span></div>
+            </div>
+        </div>
+        <div class="foot-bottom">
+            <p>&copy; 2025 AEE — Agricultural &amp; Environmental Engineering, University of Ibadan. All rights reserved. | Designed with excellence for academic distinction — <strong style="color:var(--green-light);">Emmyfest</strong></p>
+        </div>
+    </div>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script>
+    /* Scroll-triggered fade-up — same as index.html */
+    const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+    }, { threshold: 0.07 });
+    document.querySelectorAll('.fu').forEach(el => obs.observe(el));
+
+    /* Year / Level tab switcher */
+    function switchYear(yr, btn) {
+        document.querySelectorAll('.yr-pane').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.yn-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('yr' + yr).classList.add('active');
+        btn.classList.add('active');
+        /* smooth scroll to top of section */
+        document.getElementById('courses').scrollIntoView({ behavior:'smooth', block:'start' });
+    }
+
+    /* Active nav highlight on scroll */
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks  = document.querySelectorAll('#navbar .nav-link');
+    window.addEventListener('scroll', () => {
+        let cur = '';
+        sections.forEach(s => { if (window.scrollY >= s.offsetTop - 110) cur = s.id; });
+        navLinks.forEach(a => {
+            a.classList.remove('active');
+            if (a.getAttribute('href') === '#' + cur) a.classList.add('active');
+        });
+    });
+</script>
 </body>
 </html>
