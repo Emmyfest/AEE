@@ -1426,8 +1426,8 @@ def admin_stats():
 @app.before_first_request
 def initialize_database():
     try:
-    create_tables()
-    seed_database()
+        create_tables()
+        seed_database()
         app.logger.info("✅ Database initialized successfully")
     except Exception as e:
         app.logger.error(f"❌ Failed to initialize database: {e}")
