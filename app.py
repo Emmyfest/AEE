@@ -1382,7 +1382,7 @@ def admin_stats():
         with conn.cursor() as cur:
             # Payment statistics by level
             cur.execute("""
-                SELECT level, COUNT(*) as count, SUM(total_amount) as total
+                SELECT level, COUNT(*) as count, SUM(total_amount::NUMERIC) as total
                 FROM payments
                 GROUP BY level
                 ORDER BY level
@@ -1391,7 +1391,7 @@ def admin_stats():
             
             # Payment statistics by status
             cur.execute("""
-                SELECT status, COUNT(*) as count, SUM(total_amount) as total
+                SELECT status, COUNT(*) as count, SUM(total_amount::NUMERIC) as total
                 FROM payments
                 GROUP BY status
                 ORDER BY status
@@ -1402,7 +1402,7 @@ def admin_stats():
             cur.execute("""
                 SELECT TO_CHAR(created_at, 'YYYY-MM') as month, 
                        COUNT(*) as count, 
-                       SUM(total_amount) as total
+                       SUM(total_amount::NUMERIC) as total
                 FROM payments
                 GROUP BY month
                 ORDER BY month
@@ -1418,6 +1418,8 @@ def admin_stats():
         app.logger.error(f"Error loading statistics: {e}")
         flash('Error loading statistics', 'error')
         return redirect(url_for('admin_dashboard'))
+
+
 
 # =========================================================
 # --- MAIN EXECUTION BLOCK ---
