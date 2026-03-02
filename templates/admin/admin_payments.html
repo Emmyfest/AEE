@@ -87,10 +87,10 @@
                                         </td>
                                         <td>{{ payment.created_at.strftime('%Y-%m-%d') }}</td>
                                         <td>
-                                            <a href="{{ url_for('admin.view_payment', payment_id=payment.id) }}" class="btn btn-sm btn-primary">
+                                            <a href="{{ url_for('admin_view_payment', payment_id=payment.id) }}" class="btn btn-sm btn-primary">
                                                 <i class="fas fa-eye"></i> View
                                             </a>
-                                            <a href="{{ url_for('admin.edit_payment', payment_id=payment.id) }}" class="btn btn-sm btn-warning">
+                                            <a href="{{ url_for('admin_edit_payment', payment_id=payment.id) }}" class="btn btn-sm btn-warning">
                                                 <i class="fas fa-edit"></i> Edit
                                             </a>
                                         </td>
