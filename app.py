@@ -1422,8 +1422,9 @@ def admin_stats():
 # =========================================================
 # --- MAIN EXECUTION BLOCK ---
 # =========================================================
-if __name__ == '__main__':
-    # Initialize database on startup
+# Initialize database when app starts (works for Render & local)
+@app.before_first_request
+def initialize_database():
     try:
         create_tables()
         seed_database()
@@ -1431,6 +1432,7 @@ if __name__ == '__main__':
     except Exception as e:
         app.logger.error(f"❌ Failed to initialize database: {e}")
         raise
-    
-    # Run the application
+
+
+if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
