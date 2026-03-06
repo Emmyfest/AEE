@@ -443,12 +443,12 @@
             
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('payment') }}">Payment</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('staff') }}">Staff</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="{{ url_for('students') }}">Students</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('academic_program') }}">Academic Programme</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}#contact">Contact</a></li>
+                     <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{url_for('payment')}}">Payment</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{url_for('staff')}}">Staff</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{url_for('news')}}">News</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+                     <li class="nav-item"><a class="nav-link" href="{{url_for('academic_program')}}">Academic Programme</a></li>
                 </ul>
             </div>
         </div>
