@@ -918,9 +918,9 @@
         </svg>
     </div>
 
-    <!-- ============================================================
-         FOOTER
-    ============================================================ -->
+    <!-- ======================================================
+         FOOTER — enhanced
+    ====================================================== -->
     <footer>
         <div class="container">
             <div class="row g-4">
@@ -937,21 +937,22 @@
                 <div class="col-lg-2 col-md-6">
                     <div class="foot-hd">Quick Links</div>
                     <ul class="foot-links">
-                        <li><a href="{{ url_for('index') }}#about">About Us</a></li>
-                        <li><a href="{{ url_for('staff') }}">Faculty</a></li>
-                        <li><a href="{{ url_for('index') }}#programs">Programs</a></li>
-                        <li><a href="{{ url_for('index') }}#resources">Resources</a></li>
-                        <li><a href="{{ url_for('index') }}#contact">Contact</a></li>
+                        <li><a href="#about">About Us</a></li>
+                        <li><a href="{{url_for('staff')}}">Faculty</a></li>
+                        <li><a href="#programs">Programs</a></li>
+                        <li><a href="#resources">Resources</a></li>
+                        <li><a href="{{url_for('news')}}">News</a></li>
+                        <li><a href="#contact">Contact</a></li>
                     </ul>
                 </div>
                 <div class="col-lg-3 col-md-6">
                     <div class="foot-hd">Academic Programs</div>
                     <ul class="foot-links">
-                        <li><a href="{{ url_for('academic_program') }}">B.Eng Agricultural &amp; Env. Engineering</a></li>
-                        <li><a href="{{ url_for('academic_program') }}">M.Eng Agricultural &amp; Env. Engineering</a></li>
-                        <li><a href="{{ url_for('academic_program') }}">Ph.D Agricultural &amp; Env. Engineering</a></li>
-                        <li><a href="{{ url_for('payment') }}">Payment Portal</a></li>
-                        <li><a href="{{ url_for('students') }}">Student Portal</a></li>
+                        <li><a href="{{url_for('academic_program')}}">B.Eng Agricultural &amp; Env. Engineering</a></li>
+                        <li><a href="{{url_for('academic_program')}}">M.Eng Agricultural &amp; Env. Engineering</a></li>
+                        <li><a href="{{url_for('academic_program')}}">Ph.D Agricultural &amp; Env. Engineering</a></li>
+                        <li><a href="{{url_for('payment')}}">Payment Portal</a></li>
+                        <li><a href="{{url_for('students')}}">Student Portal</a></li>
                     </ul>
                 </div>
                 <div class="col-lg-3 col-md-6">
@@ -964,7 +965,7 @@
             <div class="foot-bottom">
                 <p>&copy; 2026 AEE — Agricultural &amp; Environmental Engineering, University of Ibadan.
                 All rights reserved. | Designed with excellence for academic distinction —
-                <strong style="color:var(--green-light)">Emmyfest</strong></p>
+                <strong style="color:var(--green-light);">Emmyfest</strong></p>
             </div>
         </div>
     </footer>
