@@ -822,27 +822,55 @@
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="bg-dark text-white py-5">
+    <!-- ======================================================
+         FOOTER — enhanced
+    ====================================================== -->
+    <footer>
         <div class="container">
-            <div class="row align-items-start">
-                <div class="col-md-6 mb-4 mb-md-0">
-                    <h5>Agricultural and Environmental Engineering</h5>
-                    <p class="mb-3" style="color:rgba(255,255,255,0.35);font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase">University of Ibadan, Nigeria</p>
-                    <p style="margin-bottom:0.4rem"><i class="fas fa-envelope me-2" style="color:var(--gold)"></i>info.agric@ui.edu.ng</p>
-                    <p><i class="fas fa-phone me-2" style="color:var(--gold)"></i>+234-xxx-xxx-xxxx</p>
-                </div>
-                <div class="col-md-6 text-md-end">
-                    <h6>Quick Links</h6>
-                    <div class="footer-link-row justify-content-md-end">
-                        <a href="{{ url_for('index') }}">Home</a>
-                        <a href="{{ url_for('index') }}#about">About</a>
-                        <a href="{{ url_for('index') }}#contact">Contact</a>
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="foot-brand">Agricultural &amp; Environmental Engineering</div>
+                    <p class="foot-desc">Pioneering sustainable solutions for agriculture and environment through innovative engineering practices at the University of Ibadan since 1972.</p>
+                    <div class="foot-social">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
                     </div>
                 </div>
+                <div class="col-lg-2 col-md-6">
+                    <div class="foot-hd">Quick Links</div>
+                    <ul class="foot-links">
+                        <li><a href="#about">About Us</a></li>
+                        <li><a href="{{url_for('staff')}}">Faculty</a></li>
+                        <li><a href="#programs">Programs</a></li>
+                        <li><a href="#resources">Resources</a></li>
+                        <li><a href="{{url_for('news')}}">News</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="foot-hd">Academic Programs</div>
+                    <ul class="foot-links">
+                        <li><a href="{{url_for('academic_program')}}">B.Eng Agricultural &amp; Env. Engineering</a></li>
+                        <li><a href="{{url_for('academic_program')}}">M.Eng Agricultural &amp; Env. Engineering</a></li>
+                        <li><a href="{{url_for('academic_program')}}">Ph.D Agricultural &amp; Env. Engineering</a></li>
+                        <li><a href="{{url_for('payment')}}">Payment Portal</a></li>
+                        <li><a href="{{url_for('students')}}">Student Portal</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="foot-hd">Contact Info</div>
+                    <div class="foot-ci"><i class="fas fa-map-marker-alt"></i><span>Faculty of Technology, University of Ibadan, Ibadan, Oyo State, Nigeria</span></div>
+                    <div class="foot-ci"><i class="fas fa-phone-alt"></i><span>+234-903-576-2341</span></div>
+                    <div class="foot-ci"><i class="fas fa-envelope"></i><span>info.agric@ui.edu.ng</span></div>
+                </div>
             </div>
-            <hr class="footer-divider">
-            <p class="footer-copy text-center">&copy; 2025 Agricultural and Environmental Engineering Department. All rights reserved.</p>
+            <div class="foot-bottom">
+                <p>&copy; 2026 AEE — Agricultural &amp; Environmental Engineering, University of Ibadan.
+                All rights reserved. | Designed with excellence for academic distinction —
+                <strong style="color:var(--green-light);">Emmyfest</strong></p>
+            </div>
         </div>
     </footer>
 
