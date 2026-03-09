@@ -652,7 +652,7 @@
                                         <i class="fas fa-plus-circle"></i> Optional Dues
                                     </div>
 
-                                    <div class="payment-item" onclick="toggleCheck(this)">
+                                    <div class="payment-item" onclick="toggleCheck(this, event)">
                                         <div class="form-check">
                                             <input class="form-check-input payment-checkbox" type="checkbox" value="5000" id="labCoat" data-name="Laboratory Coat">
                                             <div class="payment-item-info">
@@ -664,7 +664,7 @@
                                     </div>
 
                                 
-                                    <div class="payment-item" onclick="toggleCheck(this)">
+                                    <div class="payment-item" onclick="toggleCheck(this, event)">
                                         <div class="form-check">
                                             <input class="form-check-input payment-checkbox" type="checkbox" value="5000" id="excursion" data-name="Educational Excursion">
                                             <div class="payment-item-info">
@@ -825,13 +825,17 @@
 
     <script>
         // Toggle optional payment items
-        function toggleCheck(el) {
-            const cb = el.querySelector('.payment-checkbox');
-            if (!cb || cb.disabled) return;
-            cb.checked = !cb.checked;
-            el.classList.toggle('is-checked', cb.checked);
-            updateSummary();
-        }
+        function toggleCheck(el, event) {
+        // Prevent double toggle when clicking the checkbox itself
+        if (event.target.classList.contains('payment-checkbox')) return;
+    
+        const cb = el.querySelector('.payment-checkbox');
+        if (!cb || cb.disabled) return;
+    
+        cb.checked = !cb.checked;
+        el.classList.toggle('is-checked', cb.checked);
+        updateSummary();
+    }
 
         // Upload zone feedback
         const paymentReceipt = document.getElementById('paymentReceipt');
